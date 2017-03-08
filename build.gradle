@@ -37,7 +37,7 @@ project(':iddd_common') {
         compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.0.4'
         compile group: 'org.hibernate', name: 'hibernate', version: '3.2.7.ga'
         compile group: 'org.springframework', name: 'spring', version: '2.5.6'
-        compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.5'
+        compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.9'
         compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.7.2'
         compile group: 'javassist', name: 'javassist', version: '3.8.0.GA'
         compile group: 'javax.transaction', name: 'jta', version: '1.1'
