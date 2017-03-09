@@ -14,9 +14,15 @@
 
 package com.saasovation.collaboration.application.calendar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.junit.Test;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.domain.model.DomainRegistry;
@@ -29,6 +35,7 @@ public class CalendarEntryApplicationServiceTest extends ApplicationTest {
         super();
     }
 
+    @Test
     public void testChangeCalendarEntryDescription() throws Exception {
 
         CalendarEntry calendarEntry = this.calendarEntryAggregate();
@@ -52,6 +59,7 @@ public class CalendarEntryApplicationServiceTest extends ApplicationTest {
         assertEquals("A changed calendar entry description.", changedCalendarEntry.description());
     }
 
+    @Test
     public void testInviteCalendarEntryParticipant() throws Exception {
 
         CalendarEntry calendarEntry = this.calendarEntryAggregate();
@@ -86,6 +94,7 @@ public class CalendarEntryApplicationServiceTest extends ApplicationTest {
         }
     }
 
+    @Test
     public void testRelocateCalendarEntry() throws Exception {
 
         CalendarEntry calendarEntry = this.calendarEntryAggregate();
@@ -109,6 +118,7 @@ public class CalendarEntryApplicationServiceTest extends ApplicationTest {
         assertEquals("A changed calendar entry location.", changedCalendarEntry.location());
     }
 
+    @Test
     public void testRescheduleCalendarEntry() throws Exception {
 
         CalendarEntry calendarEntry = this.calendarEntryAggregate();
@@ -149,6 +159,7 @@ public class CalendarEntryApplicationServiceTest extends ApplicationTest {
         assertEquals(8, changedCalendarEntry.alarm().alarmUnits());
     }
 
+    @Test
     public void testUninviteCalendarEntryParticipant() throws Exception {
 
         CalendarEntry calendarEntry = this.calendarEntryAggregate();

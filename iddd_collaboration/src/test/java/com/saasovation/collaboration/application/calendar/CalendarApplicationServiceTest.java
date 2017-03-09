@@ -14,9 +14,16 @@
 
 package com.saasovation.collaboration.application.calendar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.junit.Test;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.calendar.data.CalendarCommandResult;
@@ -37,6 +44,7 @@ public class CalendarApplicationServiceTest extends ApplicationTest {
         super();
     }
 
+    @Test
     public void testChangeCalendarDescription() throws Exception {
 
         Calendar calendar = this.calendarAggregate();
@@ -61,6 +69,7 @@ public class CalendarApplicationServiceTest extends ApplicationTest {
         assertEquals("This is a changed description.", changedCalendar.description());
     }
 
+    @Test
     public void testCreateCalendar() throws Exception {
 
         CalendarCommandResult result = new CalendarCommandResult() {
@@ -105,6 +114,7 @@ public class CalendarApplicationServiceTest extends ApplicationTest {
         assertEquals("participant1", calendar.allSharedWith().iterator().next().participant().identity());
     }
 
+    @Test
     public void testRenameCalendar() throws Exception {
 
         Calendar calendar = this.calendarAggregate();
@@ -129,6 +139,7 @@ public class CalendarApplicationServiceTest extends ApplicationTest {
         assertEquals("My Training Calendar", changedCalendar.name());
     }
 
+    @Test
     public void testScheduleCalendarEntry() throws Exception {
 
         Calendar calendar = this.calendarAggregate();
@@ -179,6 +190,7 @@ public class CalendarApplicationServiceTest extends ApplicationTest {
         assertEquals("owner1", calendarEntry.owner().identity());
     }
 
+    @Test
     public void testShareCalendarWith() throws Exception {
 
         Calendar calendar = this.calendarAggregate();
@@ -211,6 +223,7 @@ public class CalendarApplicationServiceTest extends ApplicationTest {
         }
     }
 
+    @Test
     public void testUnshareCalendarWith() throws Exception {
 
         Calendar calendar = this.calendarAggregate();

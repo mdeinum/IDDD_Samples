@@ -14,6 +14,11 @@
 
 package com.saasovation.collaboration.application.forum;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.forum.data.DiscussionCommandResult;
 import com.saasovation.collaboration.domain.model.DomainRegistry;
@@ -32,6 +37,7 @@ public class PostApplicationServiceTest extends ApplicationTest {
         super();
     }
 
+    @Test
     public void testModeratePost() throws Exception {
 
         Tenant tenant = new Tenant("01234567");

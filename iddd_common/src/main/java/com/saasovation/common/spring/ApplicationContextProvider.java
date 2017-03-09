@@ -23,7 +23,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
     public static ApplicationContextProvider instance() {
-        return (ApplicationContextProvider) applicationContext.getBean("applicationContextProvider");
+        return applicationContext.getBean(ApplicationContextProvider.class);
     }
 
     public ApplicationContextProvider() {
@@ -36,8 +36,6 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 
     @Override
     public synchronized void setApplicationContext(ApplicationContext anApplicationContext) throws BeansException {
-        if (ApplicationContextProvider.applicationContext == null) {
-            ApplicationContextProvider.applicationContext = anApplicationContext;
-        }
+        ApplicationContextProvider.applicationContext = anApplicationContext;
     }
 }

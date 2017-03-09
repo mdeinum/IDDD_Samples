@@ -14,6 +14,13 @@
 
 package com.saasovation.collaboration.application.forum;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.forum.data.DiscussionCommandResult;
 import com.saasovation.collaboration.domain.model.DomainRegistry;
@@ -32,6 +39,7 @@ public class DiscussionApplicationServiceTest extends ApplicationTest {
         super();
     }
 
+    @Test
     public void testCloseDiscussion() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -60,6 +68,7 @@ public class DiscussionApplicationServiceTest extends ApplicationTest {
         assertTrue(closedDiscussion.isClosed());
     }
 
+    @Test
     public void testPostToDiscussion() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -108,6 +117,7 @@ public class DiscussionApplicationServiceTest extends ApplicationTest {
         assertEquals("Post test text...", post.bodyText());
     }
 
+    @Test
     public void testPostToDiscussionInReplyTo() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -167,6 +177,7 @@ public class DiscussionApplicationServiceTest extends ApplicationTest {
         assertEquals("Post test text in reply to...", postedInReplyTo.bodyText());
     }
 
+    @Test
     public void testReopenDiscussion() throws Exception {
 
         Forum forum = this.forumAggregate();

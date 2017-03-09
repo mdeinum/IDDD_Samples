@@ -394,7 +394,6 @@ public class MySQLJDBCEventStore implements EventStore, ApplicationContextAware 
     public synchronized void setApplicationContext(
             ApplicationContext anApplicationContext)
     throws BeansException {
-        instance = (MySQLJDBCEventStore)
-                anApplicationContext.getBean("mysqlJdbcEventStore");
+        instance = anApplicationContext.getBean(MySQLJDBCEventStore.class);
     }
 }

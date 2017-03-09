@@ -14,20 +14,30 @@
 
 package com.saasovation.collaboration.application.calendar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.calendar.data.CalendarEntryData;
 import com.saasovation.collaboration.domain.model.DomainRegistry;
 import com.saasovation.collaboration.domain.model.calendar.CalendarEntry;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CalendarEntryQueryServiceTest extends ApplicationTest {
 
     public CalendarEntryQueryServiceTest() {
         super();
     }
 
+    @Test
     public void testCalendarEntryDataOfId() throws Exception {
 
         CalendarEntry calendarEntry = this.calendarEntryAggregate();
@@ -56,6 +66,7 @@ public class CalendarEntryQueryServiceTest extends ApplicationTest {
         assertTrue(calendarEntryData.getInvitees().isEmpty());
     }
 
+    @Test
     public void testCalendarEntryDataOfCalendarId() throws Exception {
 
         CalendarEntry[] calendarEntries = this.calendarEntryAggregates();
@@ -92,6 +103,7 @@ public class CalendarEntryQueryServiceTest extends ApplicationTest {
         }
     }
 
+    @Test
     public void testTimeSpanningCalendarEntries() throws Exception {
 
         CalendarEntry[] calendarEntries = this.calendarEntryAggregates();

@@ -21,10 +21,12 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import com.saasovation.collaboration.StorageCleaner;
 import com.saasovation.collaboration.application.calendar.CalendarApplicationService;
@@ -59,20 +61,35 @@ import com.saasovation.collaboration.domain.model.tenant.Tenant;
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.port.adapter.persistence.ConnectionProvider;
 
-public abstract class ApplicationTest extends TestCase {
+@RunWith(SpringRunner.class)
+@ContextConfiguration({ "classpath:applicationContext-collaboration.xml",
+                              "classpath:applicationContext-collaboration-test.xml" })
+//@Transactional
+public abstract class ApplicationTest {
 
-    protected ApplicationContext applicationContext;
+    @Autowired
     protected CalendarApplicationService calendarApplicationService;
+    @Autowired
     protected CalendarEntryApplicationService calendarEntryApplicationService;
+    @Autowired
     protected CalendarEntryQueryService calendarEntryQueryService;
+    @Autowired
     protected CalendarQueryService calendarQueryService;
+    @Autowired
     protected CollaboratorService collaboratorService;
+    @Autowired
     protected DataSource dataSource;
+    @Autowired
     protected DiscussionApplicationService discussionApplicationService;
+    @Autowired
     protected DiscussionQueryService discussionQueryService;
+    @Autowired
     protected ForumApplicationService forumApplicationService;
+    @Autowired
     protected ForumQueryService forumQueryService;
+    @Autowired
     protected PostApplicationService postApplicationService;
+    @Autowired
     protected PostQueryService postQueryService;
 
     private StorageCleaner storageCleaner;
@@ -475,61 +492,24 @@ public abstract class ApplicationTest extends TestCase {
         return new TimeSpan(cal1.getTime(), cal2.getTime());
     }
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
+        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getClass().getCanonicalName());
 
         DomainEventPublisher.instance().reset();
 
-        if (applicationContext == null) {
-
-            // order of load is important. the test beans in
-            // applicationContext-collaboration-test.xml will
-            // replace the standard ones in the standard
-            // applicationContext-collaboration.xml definitions.
-            // allows for mocking some heavy interfaces.
-
-            applicationContext =
-                    new ClassPathXmlApplicationContext(
-                            new String[] {
-                                    "applicationContext-collaboration.xml",
-                                    "applicationContext-collaboration-test.xml" });
-        }
-
-        if (dataSource == null) {
-            dataSource = (DataSource) applicationContext.getBean("collaborationDataSource");
-        }
-
-        calendarApplicationService = (CalendarApplicationService) applicationContext.getBean("calendarApplicationService");
-        calendarQueryService = (CalendarQueryService) applicationContext.getBean("calendarQueryService");
-
-        calendarEntryApplicationService = (CalendarEntryApplicationService) applicationContext.getBean("calendarEntryApplicationService");
-        calendarEntryQueryService = (CalendarEntryQueryService) applicationContext.getBean("calendarEntryQueryService");
-
-        collaboratorService = (CollaboratorService) applicationContext.getBean("collaboratorService");
-
-        discussionApplicationService = (DiscussionApplicationService) applicationContext.getBean("discussionApplicationService");
-        discussionQueryService = (DiscussionQueryService) applicationContext.getBean("discussionQueryService");
-
-        forumApplicationService = (ForumApplicationService) applicationContext.getBean("forumApplicationService");
-        forumQueryService = (ForumQueryService) applicationContext.getBean("forumQueryService");
-
-        postApplicationService = (PostApplicationService) applicationContext.getBean("postApplicationService");
-        postQueryService = (PostQueryService) applicationContext.getBean("postQueryService");
 
         storageCleaner = new StorageCleaner(this.dataSource);
-
-        super.setUp();
     }
 
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
 
         storageCleaner.clean();
 
         ConnectionProvider.closeConnection();
 
         System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
-
-        super.tearDown();
     }
 }

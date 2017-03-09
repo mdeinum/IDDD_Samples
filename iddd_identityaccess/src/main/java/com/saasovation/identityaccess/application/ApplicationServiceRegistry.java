@@ -23,24 +23,19 @@ public class ApplicationServiceRegistry implements ApplicationContextAware  {
     private static ApplicationContext applicationContext;
 
     public static AccessApplicationService accessApplicationService() {
-        return (AccessApplicationService) applicationContext.getBean("accessApplicationService");
+        return applicationContext.getBean(AccessApplicationService.class);
     }
 
     public static IdentityApplicationService identityApplicationService() {
-        return (IdentityApplicationService) applicationContext.getBean("identityApplicationService");
+        return applicationContext.getBean(IdentityApplicationService.class);
     }
 
     public static NotificationApplicationService notificationApplicationService() {
-        return (NotificationApplicationService) applicationContext.getBean("notificationApplicationService");
+        return applicationContext.getBean(NotificationApplicationService.class);
     }
 
     @Override
-    public synchronized void setApplicationContext(
-            ApplicationContext anApplicationContext)
-    throws BeansException {
-
-        if (ApplicationServiceRegistry.applicationContext == null) {
-            ApplicationServiceRegistry.applicationContext = anApplicationContext;
-        }
+    public synchronized void setApplicationContext(ApplicationContext anApplicationContext) throws BeansException {
+        ApplicationServiceRegistry.applicationContext = anApplicationContext;
     }
 }

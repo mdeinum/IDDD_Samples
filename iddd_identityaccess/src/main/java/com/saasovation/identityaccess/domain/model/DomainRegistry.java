@@ -34,52 +34,48 @@ public class DomainRegistry implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
 
     public static AuthenticationService authenticationService() {
-        return (AuthenticationService) applicationContext.getBean("authenticationService");
+        return applicationContext.getBean(AuthenticationService.class);
     }
 
     public static AuthorizationService authorizationService() {
-        return (AuthorizationService) applicationContext.getBean("authorizationService");
+        return applicationContext.getBean(AuthorizationService.class);
     }
 
     public static EncryptionService encryptionService() {
-        return (EncryptionService) applicationContext.getBean("encryptionService");
+        return applicationContext.getBean(EncryptionService.class);
     }
 
     public static GroupMemberService groupMemberService() {
-        return (GroupMemberService) applicationContext.getBean("groupMemberService");
+        return applicationContext.getBean(GroupMemberService.class);
     }
 
     public static GroupRepository groupRepository() {
-        return (GroupRepository) applicationContext.getBean("groupRepository");
+        return applicationContext.getBean(GroupRepository.class);
     }
 
     public static PasswordService passwordService() {
-        return (PasswordService) applicationContext.getBean("passwordService");
+        return applicationContext.getBean(PasswordService.class);
     }
 
     public static RoleRepository roleRepository() {
-        return (RoleRepository) applicationContext.getBean("roleRepository");
+        return applicationContext.getBean(RoleRepository.class);
     }
 
     public static TenantProvisioningService tenantProvisioningService() {
-        return (TenantProvisioningService) applicationContext.getBean("tenantProvisioningService");
+        return applicationContext.getBean(TenantProvisioningService.class);
     }
 
     public static TenantRepository tenantRepository() {
-        return (TenantRepository) applicationContext.getBean("tenantRepository");
+        return applicationContext.getBean(TenantRepository.class);
     }
 
     public static UserRepository userRepository() {
-        return (UserRepository) applicationContext.getBean("userRepository");
+        return applicationContext.getBean(UserRepository.class);
     }
 
     @Override
-    public synchronized void setApplicationContext(
-            ApplicationContext anApplicationContext)
-    throws BeansException {
+    public synchronized void setApplicationContext(ApplicationContext anApplicationContext) throws BeansException {
 
-        if (DomainRegistry.applicationContext == null) {
-            DomainRegistry.applicationContext = anApplicationContext;
-        }
+        DomainRegistry.applicationContext = anApplicationContext;
     }
 }

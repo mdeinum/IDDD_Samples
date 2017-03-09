@@ -14,7 +14,14 @@
 
 package com.saasovation.collaboration.application.forum;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Collection;
+
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.forum.data.ForumData;
@@ -23,12 +30,14 @@ import com.saasovation.collaboration.domain.model.DomainRegistry;
 import com.saasovation.collaboration.domain.model.forum.Discussion;
 import com.saasovation.collaboration.domain.model.forum.Forum;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ForumQueryServiceTest extends ApplicationTest {
 
     public ForumQueryServiceTest() {
         super();
     }
 
+    @Test
     public void testAllForumsDataOfTenant() throws Exception {
 
         Forum[] forums = this.forumAggregates();
@@ -45,6 +54,7 @@ public class ForumQueryServiceTest extends ApplicationTest {
         assertEquals(forums.length, forumsData.size());
     }
 
+    @Test
     public void testForumDataOfId() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -70,6 +80,7 @@ public class ForumQueryServiceTest extends ApplicationTest {
         assertEquals(forum.moderator().name(), forumData.getModeratorName());
     }
 
+    @Test
     public void testForumDiscussionsDataOfId() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -105,6 +116,7 @@ public class ForumQueryServiceTest extends ApplicationTest {
         assertEquals(3, forumDiscussionsData.getDiscussions().size());
     }
 
+    @Test
     public void testForumIdOfExclusiveOwner() throws Exception {
 
         Forum forum = this.forumAggregate();

@@ -14,7 +14,14 @@
 
 package com.saasovation.collaboration.application.calendar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Collection;
+
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.calendar.data.CalendarData;
@@ -24,12 +31,14 @@ import com.saasovation.collaboration.domain.model.calendar.Calendar;
 import com.saasovation.collaboration.domain.model.calendar.CalendarSharer;
 import com.saasovation.collaboration.domain.model.collaborator.Participant;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CalendarQueryServiceTest extends ApplicationTest {
 
     public CalendarQueryServiceTest() {
         super();
     }
 
+    @Test
     public void testQueryAllCalendars() throws Exception {
         Calendar[] calendars = this.calendarAggregates();
 
@@ -52,6 +61,7 @@ public class CalendarQueryServiceTest extends ApplicationTest {
         }
     }
 
+    @Test
     public void testQueryCalendar() throws Exception {
         Calendar calendar = this.calendarAggregate();
 

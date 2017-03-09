@@ -14,7 +14,14 @@
 
 package com.saasovation.collaboration.application.forum;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.UUID;
+
+import org.junit.Test;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.forum.data.ForumCommandResult;
@@ -33,6 +40,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         super();
     }
 
+    @Test
     public void testAssignModeratorToForum() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -55,6 +63,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertEquals("newModerator", forum.moderator().identity());
     }
 
+    @Test
     public void testChangeForumDescription() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -79,6 +88,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertEquals("A changed description.", forum.description());
     }
 
+    @Test
     public void testChangeForumSubject() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -103,6 +113,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertEquals("A changed subject.", forum.subject());
     }
 
+    @Test
     public void testCloseForum() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -123,6 +134,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertTrue(forum.isClosed());
     }
 
+    @Test
     public void testReopenForum() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -145,6 +157,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertFalse(forum.isClosed());
     }
 
+    @Test
     public void testStartForum() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -184,6 +197,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertEquals(forum.description(), newlyStartedForum.description());
     }
 
+    @Test
     public void testStartExclusiveForum() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -227,6 +241,7 @@ public class ForumApplicationServiceTest extends ApplicationTest {
         assertEquals(exclusiveOwner, newlyStartedForum.exclusiveOwner());
     }
 
+    @Test
     public void testStartExclusiveForumWithDiscussion() throws Exception {
 
         Forum forum = this.forumAggregate();

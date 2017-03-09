@@ -14,7 +14,15 @@
 
 package com.saasovation.collaboration.application.forum;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
+
+import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 
 import com.saasovation.collaboration.application.ApplicationTest;
 import com.saasovation.collaboration.application.forum.data.DiscussionData;
@@ -25,12 +33,14 @@ import com.saasovation.collaboration.domain.model.forum.Discussion;
 import com.saasovation.collaboration.domain.model.forum.Forum;
 import com.saasovation.collaboration.domain.model.forum.Post;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class DiscussionQueryServiceTest extends ApplicationTest {
 
     public DiscussionQueryServiceTest() {
         super();
     }
 
+    @Test
     public void testAllDiscussionsDataOfForum() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -52,6 +62,7 @@ public class DiscussionQueryServiceTest extends ApplicationTest {
         assertEquals(discussions.length, discussionsData.size());
     }
 
+    @Test
     public void testDiscussionDataOfId() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -76,6 +87,7 @@ public class DiscussionQueryServiceTest extends ApplicationTest {
         assertEquals(discussion.isClosed(), discussionData.isClosed());
     }
 
+    @Test
     public void testDiscussionIdOfExclusiveOwner() throws Exception {
 
         Forum forum = this.forumAggregate();
@@ -92,6 +104,7 @@ public class DiscussionQueryServiceTest extends ApplicationTest {
         assertEquals(discussion.discussionId().id(), discussionId);
     }
 
+    @Test
     public void testDiscussionPostsDataOfId() throws Exception {
 
         Forum forum = this.forumAggregate();
