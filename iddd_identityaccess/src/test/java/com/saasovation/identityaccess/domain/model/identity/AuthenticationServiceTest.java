@@ -14,6 +14,13 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
@@ -23,6 +30,7 @@ public class AuthenticationServiceTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testAuthenticationSuccess() throws Exception {
 
         User user = this.userAggregate();

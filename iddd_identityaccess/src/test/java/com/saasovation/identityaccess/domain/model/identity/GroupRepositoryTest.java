@@ -14,6 +14,14 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
@@ -23,6 +31,7 @@ public class GroupRepositoryTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testRemoveGroupReferencedUser() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Group groupA = tenant.provisionGroup("GroupA", "A group named GroupA");
@@ -45,6 +54,7 @@ public class GroupRepositoryTest extends IdentityAccessTest {
         assertFalse(reGrouped.isMember(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testRepositoryRemoveGroup() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Group groupA = tenant.provisionGroup("GroupA", "A group named GroupA");

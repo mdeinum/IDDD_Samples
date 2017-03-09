@@ -14,6 +14,7 @@
 
 package com.saasovation.identityaccess.domain.model;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -75,7 +76,7 @@ public class DomainRegistry implements ApplicationContextAware {
 
     @Override
     public synchronized void setApplicationContext(ApplicationContext anApplicationContext) throws BeansException {
-
+        LoggerFactory.getLogger(DomainRegistry.class).warn("Setting ApplicationContext: " + anApplicationContext);
         DomainRegistry.applicationContext = anApplicationContext;
     }
 }

@@ -14,6 +14,12 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.springframework.transaction.event.TransactionalEventListener;
+
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
 public class EnablementTest extends IdentityAccessTest {
@@ -22,6 +28,7 @@ public class EnablementTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testEnablementEnabled() throws Exception {
 
         Enablement enablement = new Enablement(true, null, null);
@@ -29,6 +36,7 @@ public class EnablementTest extends IdentityAccessTest {
         assertTrue(enablement.isEnablementEnabled());
     }
 
+    @Test
     public void testEnablementDisabled() throws Exception {
 
         Enablement enablement = new Enablement(false, null, null);
@@ -36,6 +44,7 @@ public class EnablementTest extends IdentityAccessTest {
         assertFalse(enablement.isEnablementEnabled());
     }
 
+    @Test
     public void testEnablementOutsideStartEndDates() throws Exception {
 
         Enablement enablement =
@@ -47,6 +56,7 @@ public class EnablementTest extends IdentityAccessTest {
         assertFalse(enablement.isEnablementEnabled());
     }
 
+    @Test
     public void testEnablementUnsequencedDates() throws Exception {
 
         boolean failure = false;
@@ -63,6 +73,7 @@ public class EnablementTest extends IdentityAccessTest {
         assertTrue(failure);
     }
 
+    @Test
     public void testEnablementEndsTimeExpired() throws Exception {
 
         Enablement enablement =
@@ -74,6 +85,7 @@ public class EnablementTest extends IdentityAccessTest {
         assertTrue(enablement.isTimeExpired());
     }
 
+    @Test
     public void testEnablementHasNotBegunTimeExpired() throws Exception {
 
         Enablement enablement =

@@ -14,29 +14,43 @@
 
 package com.saasovation.identityaccess.application;
 
-import junit.framework.TestCase;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.event.EventStore;
 import com.saasovation.common.persistence.CleanableStore;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.access.Role;
+import com.saasovation.identityaccess.domain.model.access.RoleRepository;
 import com.saasovation.identityaccess.domain.model.identity.ContactInformation;
 import com.saasovation.identityaccess.domain.model.identity.EmailAddress;
 import com.saasovation.identityaccess.domain.model.identity.Enablement;
 import com.saasovation.identityaccess.domain.model.identity.FullName;
 import com.saasovation.identityaccess.domain.model.identity.Group;
+import com.saasovation.identityaccess.domain.model.identity.GroupRepository;
 import com.saasovation.identityaccess.domain.model.identity.Person;
 import com.saasovation.identityaccess.domain.model.identity.PostalAddress;
 import com.saasovation.identityaccess.domain.model.identity.RegistrationInvitation;
 import com.saasovation.identityaccess.domain.model.identity.Telephone;
 import com.saasovation.identityaccess.domain.model.identity.Tenant;
+import com.saasovation.identityaccess.domain.model.identity.TenantRepository;
 import com.saasovation.identityaccess.domain.model.identity.User;
+import com.saasovation.identityaccess.domain.model.identity.UserRepository;
 
-public abstract class ApplicationServiceTest extends TestCase {
+@RunWith(SpringRunner.class)
+@ContextConfiguration({"classpath:applicationContext-common.xml",
+                              "classpath:applicationContext-identityaccess-application.xml",
+                              "classpath:applicationContext-identityaccess-test.xml"})
+@TestPropertySource("classpath:/application-test.properties")
+@Transactional
+public abstract class ApplicationServiceTest {
 
     protected static final String FIXTURE_GROUP_NAME = "Test Group";
     protected static final String FIXTURE_PASSWORD = "SecretPassword!";
@@ -49,8 +63,21 @@ public abstract class ApplicationServiceTest extends TestCase {
     protected static final String FIXTURE_USERNAME2 = "zdoe";
 
     protected Tenant activeTenant;
-    protected ApplicationContext applicationContext;
+
+    @Autowired
     protected EventStore eventStore;
+
+    @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TenantRepository tenantRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public ApplicationServiceTest() {
         super();
@@ -125,42 +152,24 @@ public abstract class ApplicationServiceTest extends TestCase {
         return user;
     }
 
-    protected void setUp() throws Exception {
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
-
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
         DomainEventPublisher.instance().reset();
-
-        applicationContext =
-                new ClassPathXmlApplicationContext(
-                        new String[] {
-                                "applicationContext-common.xml",
-                                "applicationContext-identityaccess-application.xml",
-                                "applicationContext-identityaccess-test.xml"
-                        });
-
-
-        this.eventStore = (EventStore) applicationContext.getBean("eventStore");
-
-        this.clean((CleanableStore) this.eventStore);
-        this.clean((CleanableStore) DomainRegistry.groupRepository());
-        this.clean((CleanableStore) DomainRegistry.roleRepository());
-        this.clean((CleanableStore) DomainRegistry.tenantRepository());
-        this.clean((CleanableStore) DomainRegistry.userRepository());
+        cleanUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    private void cleanUp() {
         this.clean((CleanableStore) this.eventStore);
-        this.clean((CleanableStore) DomainRegistry.groupRepository());
-        this.clean((CleanableStore) DomainRegistry.roleRepository());
-        this.clean((CleanableStore) DomainRegistry.tenantRepository());
-        this.clean((CleanableStore) DomainRegistry.userRepository());
+        this.clean((CleanableStore) this.groupRepository);
+        this.clean((CleanableStore) this.roleRepository);
+        this.clean((CleanableStore) this.tenantRepository);
+        this.clean((CleanableStore) this.userRepository);
 
-        super.tearDown();
+    }
 
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
+    @After
+    public void tearDown() throws Exception {
+        cleanUp();
     }
 
     private void clean(CleanableStore aCleanableStore) {

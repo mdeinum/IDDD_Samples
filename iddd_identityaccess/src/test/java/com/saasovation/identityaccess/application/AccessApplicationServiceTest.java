@@ -14,6 +14,13 @@
 
 package com.saasovation.identityaccess.application;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.application.command.AssignUserToRoleCommand;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.access.Role;
@@ -25,6 +32,7 @@ public class AccessApplicationServiceTest extends ApplicationServiceTest {
         super();
     }
 
+    @Test
     public void testAssignUserToRole() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -45,6 +53,7 @@ public class AccessApplicationServiceTest extends ApplicationServiceTest {
         assertTrue(role.isInRole(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testIsUserInRole() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -77,6 +86,7 @@ public class AccessApplicationServiceTest extends ApplicationServiceTest {
                             role.name()));
     }
 
+    @Test
     public void testUserInRole() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);

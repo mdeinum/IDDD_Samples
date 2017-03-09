@@ -14,97 +14,37 @@
 
 package com.saasovation.identityaccess.resource;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.jboss.resteasy.plugins.server.tjws.TJWSEmbeddedJaxrsServer;
+import org.junit.Before;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.saasovation.identityaccess.application.ApplicationServiceTest;
-import com.saasovation.identityaccess.resource.GroupResource;
-import com.saasovation.identityaccess.resource.NotificationResource;
-import com.saasovation.identityaccess.resource.TenantResource;
-import com.saasovation.identityaccess.resource.UserResource;
 
+@ContextConfiguration({"classpath:applicationContext-identityaccess-servlet.xml"})
+@WebAppConfiguration
 public abstract class ResourceTestCase extends ApplicationServiceTest {
 
     protected final static int PORT = 8081;
 
-    private TJWSEmbeddedJaxrsServer server;
+
+    @Autowired
+    private WebApplicationContext wac;
+
+    protected MockMvc mockMvc;
 
     protected ResourceTestCase() {
         super();
     }
 
-    protected void dumpHeaders(MultivaluedMap<String, String> aResponseHeaders) {
-        for (String key : aResponseHeaders.keySet()) {
-            System.out.print(key + ":");
-            String sep = " ";
-            for (String value : aResponseHeaders.get(key)) {
-                System.out.print(sep);
-                System.out.print(value);
-                sep = ", ";
-            }
-
-            System.out.println();
-        }
-    }
-
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
-        this.setUpEmbeddedServer();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-    protected void tearDown() throws Exception {
-        this.getServer().stop();
-
-        this.setServer(null);
-
-        super.tearDown();
-    }
-
-    private void setUpEmbeddedServer() {
-        TJWSEmbeddedJaxrsServer server = new TJWSEmbeddedJaxrsServer();
-
-        server.setPort(PORT);
-        server.getDeployment().setApplication(new ResourceTestCaseApplication());
-        server.getDeployment().getActualResourceClasses().add(GroupResource.class);
-        server.getDeployment().getActualResourceClasses().add(NotificationResource.class);
-        server.getDeployment().getActualResourceClasses().add(TenantResource.class);
-        server.getDeployment().getActualResourceClasses().add(UserResource.class);
-
-        server.start();
-
-        this.setServer(server);
-    }
-
-    private TJWSEmbeddedJaxrsServer getServer() {
-        return server;
-    }
-
-    private void setServer(TJWSEmbeddedJaxrsServer aServer) {
-        this.server = aServer;
-    }
-
-    private static class ResourceTestCaseApplication extends Application {
-
-        public ResourceTestCaseApplication() {
-            super();
-        }
-
-        @Override
-        public Set<Class<?>> getClasses() {
-            Set<Class<?>> classes = new HashSet<Class<?>>();
-            return classes;
-        }
-
-        @Override
-        public Set<Object> getSingletons() {
-            Set<Object> singletons = new HashSet<Object>();
-            return singletons;
-        }
-    }
 }

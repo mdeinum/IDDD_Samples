@@ -14,7 +14,15 @@
 
 package com.saasovation.identityaccess.application;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.saasovation.identityaccess.application.command.ActivateTenantCommand;
 import com.saasovation.identityaccess.application.command.AddGroupToGroupCommand;
@@ -43,6 +51,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         super();
     }
 
+    @Test
     public void testActivateTenant() throws Exception {
         Tenant tenant = this.tenantAggregate();
         tenant.deactivate();
@@ -59,6 +68,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertTrue(changedTenant.isActive());
     }
 
+    @Test
     public void testAddGroupToGroup() throws Exception {
         Group parentGroup = this.group1Aggregate();
         DomainRegistry.groupRepository().add(parentGroup);
@@ -78,6 +88,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals(1, parentGroup.groupMembers().size());
     }
 
+    @Test
     public void testAddUserToGroup() throws Exception {
         Group parentGroup = this.group1Aggregate();
         DomainRegistry.groupRepository().add(parentGroup);
@@ -106,6 +117,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertTrue(childGroup.isMember(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testAuthenticateUser() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -122,6 +134,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals(user.username(), userDescriptor.username());
     }
 
+    @Test
     public void testDeactivateTenant() throws Exception {
         Tenant tenant = this.tenantAggregate();
         assertTrue(tenant.isActive());
@@ -137,6 +150,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertFalse(changedTenant.isActive());
     }
 
+    @Test
     public void testChangeUserContactInformation() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -171,6 +185,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals("Loveland", changedUser.person().contactInformation().postalAddress().city());
     }
 
+    @Test
     public void testChangeUserEmailAddress() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -194,6 +209,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals("mynewemailaddress@saasovation.com", changedUser.person().emailAddress().address());
     }
 
+    @Test
     public void testChangeUserPostalAddress() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -222,6 +238,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals("Loveland", changedUser.person().contactInformation().postalAddress().city());
     }
 
+    @Test
     public void testChangeUserPrimaryTelephone() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -245,6 +262,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals("777-555-1211", changedUser.person().contactInformation().primaryTelephone().number());
     }
 
+    @Test
     public void testChangeUserSecondaryTelephone() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -268,6 +286,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals("777-555-1212", changedUser.person().contactInformation().secondaryTelephone().number());
     }
 
+    @Test
     public void testChangeUserPassword() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -293,6 +312,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals(user.username(), userDescriptor.username());
     }
 
+    @Test
     public void testChangeUserPersonalName() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -317,6 +337,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals("World Peace", changedUser.person().name().asFormattedName());
     }
 
+    @Test
     public void testDefineUserEnablement() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -345,6 +366,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertTrue(changedUser.isEnabled());
     }
 
+    @Test
     public void testIsGroupMember() throws Exception {
         Group parentGroup = this.group1Aggregate();
         DomainRegistry.groupRepository().add(parentGroup);
@@ -378,6 +400,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
                             user.username()));
     }
 
+    @Test
     public void testRemoveGroupFromGroup() throws Exception {
         Group parentGroup = this.group1Aggregate();
         DomainRegistry.groupRepository().add(parentGroup);
@@ -399,6 +422,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals(0, parentGroup.groupMembers().size());
     }
 
+    @Test
     public void testRemoveUserFromGroup() throws Exception {
         Group parentGroup = this.group1Aggregate();
         DomainRegistry.groupRepository().add(parentGroup);
@@ -430,6 +454,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertFalse(childGroup.isMember(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testQueryTenant() throws Exception {
         Tenant tenant = this.tenantAggregate();
 
@@ -442,6 +467,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals(tenant, queriedTenant);
     }
 
+    @Test
     public void testQueryUser() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -455,6 +481,7 @@ public class IdentityApplicationServiceTest extends ApplicationServiceTest {
         assertEquals(user, queriedUser);
     }
 
+    @Test
     public void testQueryUserDescriptor() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);

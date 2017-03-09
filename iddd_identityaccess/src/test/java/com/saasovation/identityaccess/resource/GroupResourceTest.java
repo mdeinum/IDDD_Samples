@@ -14,9 +14,15 @@
 
 package com.saasovation.identityaccess.resource;
 
-import org.jboss.resteasy.client.ClientRequest;
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import com.saasovation.common.media.RepresentationReader;
+import org.junit.Test;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.saasovation.common.media.OvationsMediaType;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.identity.Group;
 
@@ -26,22 +32,30 @@ public class GroupResourceTest extends ResourceTestCase {
         super();
     }
 
+    @Test
     public void testGetGroup() throws Exception {
         Group group = this.group1Aggregate();
         DomainRegistry.groupRepository().add(group);
 
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/groups/{groupName}";
 
-        System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", group.tenantId().id());
-        request.pathParameter("groupName", group.name());
-        String output = request.getTarget(String.class);
-        System.out.println(output);
+        mockMvc.perform(get(url, group.tenantId().id(), group.name()))
+                .andDo(log())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(OvationsMediaType.ID_OVATION_TYPE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.tenantId.id", is(group.tenantId().id())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", is(group.name())));
 
-        RepresentationReader reader = new RepresentationReader(output);
-
-        assertEquals(group.tenantId().id(), reader.stringValue("tenantId.id"));
-        assertEquals(group.name(), reader.stringValue("name"));
+//        System.out.println(">>> GET: " + url);
+//        ClientRequest request = new ClientRequest(url);
+//        request.pathParameter("tenantId", group.tenantId().id());
+//        request.pathParameter("groupName", group.name());
+//        String output = request.getTarget(String.class);
+//        System.out.println(output);
+//
+//        RepresentationReader reader = new RepresentationReader(output);
+//
+//        assertEquals(group.tenantId().id(), reader.stringValue("tenantId.id"));
+//        assertEquals(group.name(), reader.stringValue("name"));
     }
 }

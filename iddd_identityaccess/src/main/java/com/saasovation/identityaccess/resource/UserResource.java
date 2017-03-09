@@ -14,16 +14,11 @@
 
 package com.saasovation.identityaccess.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.EntityTag;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.saasovation.common.media.OvationsMediaType;
 import com.saasovation.common.serializer.ObjectSerializer;
@@ -33,21 +28,19 @@ import com.saasovation.identityaccess.application.representation.UserRepresentat
 import com.saasovation.identityaccess.domain.model.identity.User;
 import com.saasovation.identityaccess.domain.model.identity.UserDescriptor;
 
-@Path("/tenants/{tenantId}/users")
+@RestController
+@RequestMapping("/tenants/{tenantId}/users")
 public class UserResource extends AbstractResource {
 
     public UserResource() {
         super();
     }
 
-    @GET
-    @Path("{username}/autenticatedWith/{password}")
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    public Response getAuthenticUser(
-            @PathParam("tenantId") String aTenantId,
-            @PathParam("username") String aUsername,
-            @PathParam("password") String aPassword,
-            @Context Request aRequest) {
+    @GetMapping(value = "{username}/autenticatedWith/{password}", produces = OvationsMediaType.ID_OVATION_TYPE)
+    public ResponseEntity<String> getAuthenticUser(
+            @PathVariable("tenantId") String aTenantId,
+            @PathVariable("username") String aUsername,
+            @PathVariable("password") String aPassword) {
 
         UserDescriptor userDescriptor =
                 this.identityApplicationService()
@@ -58,42 +51,33 @@ public class UserResource extends AbstractResource {
                                     aPassword));
 
         if (userDescriptor.isNullDescriptor()) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
 
-        Response response = this.userDescriptorResponse(aRequest, userDescriptor);
-
-        return response;
+        return this.userDescriptorResponse(userDescriptor);
     }
 
-    @GET
-    @Path("{username}")
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    public Response getUser(
-            @PathParam("tenantId") String aTenantId,
-            @PathParam("username") String aUsername,
-            @Context Request aRequest) {
+    @GetMapping(value = "{username}", produces = OvationsMediaType.ID_OVATION_TYPE)
+    public ResponseEntity<String> getUser(
+            @PathVariable("tenantId") String aTenantId,
+            @PathVariable("username") String aUsername) {
 
         User user = this.identityApplicationService().user(aTenantId, aUsername);
 
         if (user == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
 
-        Response response = this.userResponse(aRequest, user);
-
-        return response;
+        return this.userResponse(user);
     }
 
-    @GET
-    @Path("{username}/inRole/{role}")
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    public Response getUserInRole(
-            @PathParam("tenantId") String aTenantId,
-            @PathParam("username") String aUsername,
-            @PathParam("role") String aRoleName) {
+    @GetMapping(value = "{username}/inRole/{role}", produces =OvationsMediaType.ID_OVATION_TYPE )
+    public ResponseEntity<String> getUserInRole(
+            @PathVariable("tenantId") String aTenantId,
+            @PathVariable("username") String aUsername,
+            @PathVariable("role") String aRoleName) {
 
-        Response response = null;
+        ResponseEntity<String> response;
 
         User user = null;
 
@@ -110,30 +94,22 @@ public class UserResource extends AbstractResource {
         if (user != null) {
             response = this.userInRoleResponse(user, aRoleName);
         } else {
-            response = Response.noContent().build();
+            response = ResponseEntity.noContent().build();
         }
 
         return response;
     }
 
-    private Response userDescriptorResponse(
-            Request aRequest,
-            UserDescriptor aUserDescriptor) {
-
-        Response response = null;
+    private ResponseEntity<String> userDescriptorResponse(UserDescriptor aUserDescriptor) {
 
         String representation = ObjectSerializer.instance().serialize(aUserDescriptor);
-
-        response =
-            Response
-                .ok(representation)
-                .cacheControl(this.cacheControlFor(30))
-                .build();
-
-        return response;
+        return
+                ResponseEntity.ok()
+                        .cacheControl(this.cacheControlFor(30))
+                        .body(representation);
     }
 
-    private Response userInRoleResponse(User aUser, String aRoleName) {
+    private ResponseEntity<String> userInRoleResponse(User aUser, String aRoleName) {
 
         UserInRoleRepresentation userInRoleRepresentation =
                 new UserInRoleRepresentation(aUser, aRoleName);
@@ -143,42 +119,38 @@ public class UserResource extends AbstractResource {
                     .instance()
                     .serialize(userInRoleRepresentation);
 
-        Response response =
-                Response
-                    .ok(representation)
-                    .cacheControl(this.cacheControlFor(60))
-                    .build();
-
-        return response;
+        return
+                ResponseEntity.ok()
+                        .cacheControl(this.cacheControlFor(60))
+                        .body(representation);
     }
 
-    private Response userResponse(Request aRequest, User aUser) {
+    private ResponseEntity<String> userResponse(User aUser) {
 
-        Response response = null;
+        String eTag = this.userETag(aUser);
 
-        EntityTag eTag = this.userETag(aUser);
 
-        ResponseBuilder conditionalBuilder = aRequest.evaluatePreconditions(eTag);
-
-        if (conditionalBuilder != null) {
-            response =
-                    conditionalBuilder
-                        .cacheControl(this.cacheControlFor(3600))
-                        .tag(eTag)
-                        .build();
-        } else {
+        ResponseEntity<String> response;
+//        ResponseBuilder conditionalBuilder = aRequest.evaluatePreconditions(eTag);
+//
+//        if (conditionalBuilder != null) {
+//            response =
+//                    conditionalBuilder
+//                        .cacheControl(this.cacheControlFor(3600))
+//                        .tag(eTag)
+//                        .build();
+//        } else {
             String representation =
                     ObjectSerializer
                         .instance()
                         .serialize(new UserRepresentation(aUser));
 
             response =
-                    Response
-                        .ok(representation)
+                    ResponseEntity.ok()
                         .cacheControl(this.cacheControlFor(3600))
-                        .tag(eTag)
-                        .build();
-        }
+                        .eTag(eTag)
+                        .body(representation);
+//        }
 
         return response;
     }

@@ -14,6 +14,13 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.domain.model.DomainEventSubscriber;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
@@ -27,6 +34,7 @@ public class UserTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testUserEnablementEnabled() throws Exception {
 
         User user = this.userAggregate();
@@ -34,6 +42,7 @@ public class UserTest extends IdentityAccessTest {
         assertTrue(user.isEnabled());
     }
 
+    @Test
     public void testUserEnablementDisabled() throws Exception {
 
         final User user = this.userAggregate();
@@ -56,6 +65,7 @@ public class UserTest extends IdentityAccessTest {
         assertTrue(handled);
     }
 
+    @Test
     public void testUserEnablementWithinStartEndDates() throws Exception {
 
         final User user = this.userAggregate();
@@ -82,6 +92,7 @@ public class UserTest extends IdentityAccessTest {
         assertTrue(handled);
     }
 
+    @Test
     public void testUserEnablementOutsideStartEndDates() throws Exception {
 
         final User user = this.userAggregate();
@@ -108,6 +119,7 @@ public class UserTest extends IdentityAccessTest {
         assertTrue(handled);
     }
 
+    @Test
     public void testUserEnablementUnsequencedDates() throws Exception {
 
         final User user = this.userAggregate();
@@ -140,6 +152,7 @@ public class UserTest extends IdentityAccessTest {
         assertFalse(handled);
     }
 
+    @Test
     public void testUserDescriptor() throws Exception {
 
         User user = this.userAggregate();
@@ -157,6 +170,7 @@ public class UserTest extends IdentityAccessTest {
         assertEquals(userDescriptor.username(), FIXTURE_USERNAME);
     }
 
+    @Test
     public void testUserChangePassword() throws Exception {
 
         final User user = this.userAggregate();
@@ -179,6 +193,7 @@ public class UserTest extends IdentityAccessTest {
         assertTrue(handled);
     }
 
+    @Test
     public void testUserChangePasswordFails() throws Exception {
 
         User user = this.userAggregate();
@@ -194,6 +209,7 @@ public class UserTest extends IdentityAccessTest {
         }
     }
 
+    @Test
     public void testUserPasswordHashedOnConstruction() throws Exception {
 
         User user = this.userAggregate();
@@ -201,6 +217,7 @@ public class UserTest extends IdentityAccessTest {
         assertFalse(FIXTURE_PASSWORD.equals(user.password()));
     }
 
+    @Test
     public void testUserPasswordHashedOnChange() throws Exception {
 
         User user = this.userAggregate();
@@ -213,6 +230,7 @@ public class UserTest extends IdentityAccessTest {
         assertFalse(strongPassword.equals(user.password()));
     }
 
+    @Test
     public void testUserPersonalContactInformationChanged() throws Exception {
 
         final User user = this.userAggregate();
@@ -246,6 +264,7 @@ public class UserTest extends IdentityAccessTest {
         assertTrue(handled);
     }
 
+    @Test
     public void testUserPersonNameChanged() throws Exception {
 
         final User user = this.userAggregate();

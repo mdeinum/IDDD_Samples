@@ -14,61 +14,42 @@
 
 package com.saasovation.identityaccess.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.Response;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.saasovation.common.media.OvationsMediaType;
 import com.saasovation.common.serializer.ObjectSerializer;
 import com.saasovation.identityaccess.domain.model.identity.Group;
 
-@Path("/tenants/{tenantId}/groups")
+@RestController
+@RequestMapping("/tenants/{tenantId}/groups")
 public class GroupResource extends AbstractResource {
 
     public GroupResource() {
         super();
     }
 
-    @GET
-    @Path("{groupName}")
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    public Response getGroup(
-            @PathParam("tenantId") String aTenantId,
-            @PathParam("groupName") String aGroupName,
-            @Context Request aRequest) {
+    @GetMapping(value = "{groupName}", produces = OvationsMediaType.ID_OVATION_TYPE)
+    public ResponseEntity<String> getGroup(@PathVariable("tenantId") String aTenantId, @PathVariable("groupName") String aGroupName) {
 
-        Group group =
-                this.identityApplicationService()
-                    .group(aTenantId, aGroupName);
+        Group group = this.identityApplicationService().group(aTenantId, aGroupName);
 
         if (group == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
 
-        Response response = this.groupResponse(aRequest, group);
-
-        return response;
+        return this.groupResponse(group);
     }
 
-    private Response groupResponse(
-            Request aRequest,
-            Group aGroup) {
+    private ResponseEntity<String> groupResponse(
 
-        Response response = null;
+            Group aGroup) {
 
         String representation = ObjectSerializer.instance().serialize(aGroup);
 
-        response =
-            Response
-                .ok(representation)
-                .cacheControl(this.cacheControlFor(30))
-                .build();
-
-        return response;
+        return ResponseEntity.ok().cacheControl(this.cacheControlFor(30)).body(representation);
     }
 }

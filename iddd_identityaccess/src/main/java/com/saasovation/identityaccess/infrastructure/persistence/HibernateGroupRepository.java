@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import org.hibernate.Query;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.type.StringType;
 
 import com.saasovation.common.port.adapter.persistence.hibernate.AbstractHibernateSession;
 import com.saasovation.identityaccess.domain.model.identity.Group;
@@ -66,7 +67,7 @@ public class HibernateGroupRepository
                   + "and _obj_.name = ?");
 
         query.setParameter(0, aTenantId);
-        query.setParameter(1, aName, org.hibernate.Hibernate.STRING);
+        query.setParameter(1, aName, StringType.INSTANCE);
 
         return (Group) query.uniqueResult();
     }

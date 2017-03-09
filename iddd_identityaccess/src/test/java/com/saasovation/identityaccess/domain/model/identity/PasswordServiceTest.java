@@ -14,6 +14,11 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
@@ -23,6 +28,7 @@ public class PasswordServiceTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testGenerateStrongPassword() throws Exception {
         String password =
                 DomainRegistry
@@ -33,6 +39,7 @@ public class PasswordServiceTest extends IdentityAccessTest {
         assertFalse(DomainRegistry.passwordService().isWeak(password));
     }
 
+    @Test
     public void testIsStrongPassword() throws Exception {
         final String password = "Th1sShudBStrong.";
         assertTrue(DomainRegistry.passwordService().isStrong(password));
@@ -40,6 +47,7 @@ public class PasswordServiceTest extends IdentityAccessTest {
         assertFalse(DomainRegistry.passwordService().isWeak(password));
     }
 
+    @Test
     public void testIsVeryStrongPassword() throws Exception {
         final String password = "Th1sSh0uldBV3ryStrong!";
         assertTrue(DomainRegistry.passwordService().isVeryStrong(password));
@@ -47,6 +55,7 @@ public class PasswordServiceTest extends IdentityAccessTest {
         assertFalse(DomainRegistry.passwordService().isWeak(password));
     }
 
+    @Test
     public void testIsWeakPassword() throws Exception {
         final String password = "Weakness";
         assertFalse(DomainRegistry.passwordService().isVeryStrong(password));

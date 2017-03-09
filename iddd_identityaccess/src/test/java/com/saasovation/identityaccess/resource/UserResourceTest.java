@@ -14,10 +14,15 @@
 
 package com.saasovation.identityaccess.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.UUID;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.junit.Test;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.saasovation.common.media.RepresentationReader;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
@@ -30,6 +35,7 @@ public class UserResourceTest extends ResourceTestCase {
         super();
     }
 
+    @Test
     public void testGetAuthenticUser() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -37,13 +43,10 @@ public class UserResourceTest extends ResourceTestCase {
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/users/{username}/autenticatedWith/{password}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", user.tenantId().id());
-        request.pathParameter("username", user.username());
-        request.pathParameter("password", FIXTURE_PASSWORD);
 
-        String output = request.getTarget(String.class);
-        System.out.println(output);
+        String output = mockMvc.perform(MockMvcRequestBuilders.get(url, user.tenantId().id(), user.username(), FIXTURE_PASSWORD))
+                .andDo(log())
+                .andReturn().getResponse().getContentAsString();
 
         RepresentationReader reader = new RepresentationReader(output);
 
@@ -52,6 +55,7 @@ public class UserResourceTest extends ResourceTestCase {
         assertEquals(user.person().emailAddress().address(), reader.stringValue("emailAddress"));
     }
 
+    @Test
     public void testGetAuthenticUserWrongPassword() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -59,14 +63,13 @@ public class UserResourceTest extends ResourceTestCase {
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/users/{username}/autenticatedWith/{password}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", user.tenantId().id());
-        request.pathParameter("username", user.username());
-        request.pathParameter("password", UUID.randomUUID().toString());
-        ClientResponse<String> response = request.get(String.class);
-        assertTrue(response.getStatus() == 404 || response.getStatus() == 500);
+
+         mockMvc.perform(MockMvcRequestBuilders.get(url, user.tenantId().id(), user.username(), UUID.randomUUID().toString()))
+                .andDo(log())
+                .andExpect(status().isNotFound());
     }
 
+    @Test
     public void testGetUser() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -74,18 +77,18 @@ public class UserResourceTest extends ResourceTestCase {
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/users/{username}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", user.tenantId().id());
-        request.pathParameter("username", user.username());
-        ClientResponse<String> response = request.get(String.class);
-        assertEquals(200, response.getStatus());
-        String entity = response.getEntity();
-        System.out.println(entity);
+
+        String entity = mockMvc.perform(MockMvcRequestBuilders.get(url, user.tenantId().id(), user.username()))
+                .andDo(log())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
         RepresentationReader reader = new RepresentationReader(entity);
         assertEquals(user.username(), reader.stringValue("username"));
         assertTrue(reader.booleanValue("enabled"));
     }
 
+    @Test
     public void testGetNonExistingUser() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -93,13 +96,14 @@ public class UserResourceTest extends ResourceTestCase {
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/users/{username}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", user.tenantId().id());
-        request.pathParameter("username", user.username() + "!");
-        ClientResponse<String> response = request.get(String.class);
-        assertTrue(response.getStatus() == 404 || response.getStatus() == 500);
+        mockMvc.perform(MockMvcRequestBuilders.get(url, user.tenantId().id(), user.username() + "!"))
+                .andDo(log())
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
     }
 
+    @Test
     public void testIsUserInRole() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -111,19 +115,18 @@ public class UserResourceTest extends ResourceTestCase {
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/users/{username}/inRole/{role}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", user.tenantId().id());
-        request.pathParameter("username", user.username());
-        request.pathParameter("role", role.name());
-        ClientResponse<String> response = request.get(String.class);
-        assertEquals(200, response.getStatus());
-        String entity = response.getEntity();
-        System.out.println(entity);
+
+        String entity = mockMvc.perform(MockMvcRequestBuilders.get(url, user.tenantId().id(), user.username(), role.name()))
+                .andDo(log())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
         RepresentationReader reader = new RepresentationReader(entity);
         assertEquals(user.username(),  reader.stringValue("username"));
         assertEquals(role.name(), reader.stringValue("role"));
     }
 
+    @Test
     public void testIsUserNotInRole() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -134,11 +137,9 @@ public class UserResourceTest extends ResourceTestCase {
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}/users/{username}/inRole/{role}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", user.tenantId().id());
-        request.pathParameter("username", user.username());
-        request.pathParameter("role", role.name());
-        ClientResponse<String> response = request.get(String.class);
-        assertEquals(204, response.getStatus());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(url, user.tenantId().id(), user.username(), role.name()))
+                .andDo(log())
+                .andExpect(status().isNoContent());
     }
 }

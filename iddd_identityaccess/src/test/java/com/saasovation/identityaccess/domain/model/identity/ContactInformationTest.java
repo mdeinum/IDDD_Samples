@@ -14,6 +14,11 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
 public class ContactInformationTest extends IdentityAccessTest {
@@ -22,6 +27,7 @@ public class ContactInformationTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testContactInformation() throws Exception {
         ContactInformation contactInformation = this.contactInformation();
 
@@ -30,6 +36,7 @@ public class ContactInformationTest extends IdentityAccessTest {
         assertEquals("CO", contactInformation.postalAddress().stateProvince());
     }
 
+    @Test
     public void testChangeEmailAddress() throws Exception {
         ContactInformation contactInformation = this.contactInformation();
         ContactInformation contactInformationCopy = new ContactInformation(contactInformation);
@@ -49,6 +56,7 @@ public class ContactInformationTest extends IdentityAccessTest {
         assertEquals("CO", contactInformation.postalAddress().stateProvince());
     }
 
+    @Test
     public void testChangePostalAddress() throws Exception {
         ContactInformation contactInformation = this.contactInformation();
         ContactInformation contactInformationCopy = new ContactInformation(contactInformation);
@@ -67,6 +75,7 @@ public class ContactInformationTest extends IdentityAccessTest {
         assertEquals("CO", contactInformation2.postalAddress().stateProvince());
     }
 
+    @Test
     public void testChangePrimaryTelephone() throws Exception {
         ContactInformation contactInformation = this.contactInformation();
         ContactInformation contactInformationCopy = new ContactInformation(contactInformation);
@@ -85,6 +94,7 @@ public class ContactInformationTest extends IdentityAccessTest {
         assertEquals("CO", contactInformation2.postalAddress().stateProvince());
     }
 
+    @Test
     public void testChangeSecondaryTelephone() throws Exception {
         ContactInformation contactInformation = this.contactInformation();
         ContactInformation contactInformationCopy = new ContactInformation(contactInformation);

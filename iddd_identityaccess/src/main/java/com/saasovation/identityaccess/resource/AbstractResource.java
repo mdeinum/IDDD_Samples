@@ -16,9 +16,9 @@ package com.saasovation.identityaccess.resource;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.core.CacheControl;
-import javax.ws.rs.core.EntityTag;
+import org.springframework.http.CacheControl;
 
 import com.saasovation.identityaccess.application.AccessApplicationService;
 import com.saasovation.identityaccess.application.ApplicationServiceRegistry;
@@ -37,9 +37,7 @@ public class AbstractResource {
     }
 
     protected CacheControl cacheControlFor(int aNumberOfSeconds) {
-        CacheControl cacheControl = new CacheControl();
-        cacheControl.setMaxAge(aNumberOfSeconds);
-        return cacheControl;
+        return CacheControl.maxAge(30, TimeUnit.SECONDS);
     }
 
     protected IdentityApplicationService identityApplicationService() {
@@ -50,9 +48,8 @@ public class AbstractResource {
         return ApplicationServiceRegistry.notificationApplicationService();
     }
 
-    protected EntityTag userETag(User aUser) {
+    protected String userETag(User aUser) {
 
-        EntityTag tag = null;
 
         int hashCode = aUser.hashCode() + aUser.person().hashCode();
 
@@ -63,12 +60,10 @@ public class AbstractResource {
             BigInteger digestValue = new BigInteger(1, messageDigest.digest());
             String strongHash = digestValue.toString(16);
 
-            tag = new EntityTag(strongHash);
+            return strongHash;
 
         } catch (Throwable t) {
-            tag = new EntityTag(Integer.toString(hashCode));
+            return Integer.toString(hashCode);
         }
-
-        return tag;
     }
 }

@@ -14,6 +14,14 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.springframework.transaction.event.TransactionalEventListener;
+
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.domain.model.DomainEventSubscriber;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
@@ -28,6 +36,7 @@ public class TenantTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testProvisionTenant() throws Exception {
 
         DomainEventPublisher
@@ -79,6 +88,7 @@ public class TenantTest extends IdentityAccessTest {
         assertEquals(FIXTURE_TENANT_DESCRIPTION, tenant.description());
     }
 
+    @Test
     public void testCreateOpenEndedInvitation() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -90,6 +100,7 @@ public class TenantTest extends IdentityAccessTest {
         assertNotNull(tenant.redefineRegistrationInvitationAs("Open-Ended"));
     }
 
+    @Test
     public void testOpenEndedInvitationAvailable() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -101,6 +112,7 @@ public class TenantTest extends IdentityAccessTest {
         assertTrue(tenant.isRegistrationAvailableThrough("Open-Ended"));
     }
 
+    @Test
     public void testClosedEndedInvitationAvailable() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -113,6 +125,7 @@ public class TenantTest extends IdentityAccessTest {
         assertTrue(tenant.isRegistrationAvailableThrough("Today-and-Tomorrow"));
     }
 
+    @Test
     public void testClosedEndedInvitationNotAvailable() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -125,6 +138,7 @@ public class TenantTest extends IdentityAccessTest {
         assertFalse(tenant.isRegistrationAvailableThrough("Tomorrow-and-Day-After-Tomorrow"));
     }
 
+    @Test
     public void testAvailableInivitationDescriptor() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -141,6 +155,7 @@ public class TenantTest extends IdentityAccessTest {
         assertEquals(tenant.allAvailableRegistrationInvitations().size(), 2);
     }
 
+    @Test
     public void testUnavailableInivitationDescriptor() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -153,6 +168,7 @@ public class TenantTest extends IdentityAccessTest {
         assertEquals(tenant.allUnavailableRegistrationInvitations().size(), 1);
     }
 
+    @Test
     public void testRegisterUser() throws Exception {
 
         Tenant tenant = this.tenantAggregate();

@@ -14,6 +14,10 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
 public class FullNameTest extends IdentityAccessTest {
@@ -27,18 +31,21 @@ public class FullNameTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testChangedFirstName() throws Exception {
         FullName name = new FullName(WRONG_FIRST_NAME, LAST_NAME);
         name = name.withChangedFirstName(FIRST_NAME);
         assertEquals(FIRST_NAME + " " + LAST_NAME, name.asFormattedName());
     }
 
+    @Test
     public void testChangedLastName() throws Exception {
         FullName name = new FullName(FIRST_NAME, LAST_NAME);
         name = name.withChangedLastName(MARRIED_LAST_NAME);
         assertEquals(FIRST_NAME + " " + MARRIED_LAST_NAME, name.asFormattedName());
     }
 
+    @Test
     public void testFormattedName() throws Exception {
         FullName name = new FullName(FIRST_NAME, LAST_NAME);
         assertEquals(FIRST_NAME + " " + LAST_NAME, name.asFormattedName());

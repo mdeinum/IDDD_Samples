@@ -14,15 +14,12 @@
 
 package com.saasovation.identityaccess.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.saasovation.common.media.Link;
 import com.saasovation.common.media.OvationsMediaType;
@@ -30,161 +27,95 @@ import com.saasovation.common.notification.NotificationLog;
 import com.saasovation.common.serializer.ObjectSerializer;
 import com.saasovation.identityaccess.application.representation.NotificationLogRepresentation;
 
-@Path("/notifications")
+@RestController
+@RequestMapping("/notifications")
 public class NotificationResource extends AbstractResource {
 
     public NotificationResource() {
         super();
     }
 
-    @GET
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    public Response getCurrentNotificationLog(
-            @Context UriInfo aUriInfo) {
+    @GetMapping(produces = OvationsMediaType.ID_OVATION_TYPE)
+    public ResponseEntity<String> getCurrentNotificationLog() {
 
-        NotificationLog currentNotificationLog =
-            this.notificationApplicationService()
-                .currentNotificationLog();
+        NotificationLog currentNotificationLog = this.notificationApplicationService().currentNotificationLog();
 
         if (currentNotificationLog == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
 
-        Response response =
-            this.currentNotificationLogResponse(
-                    currentNotificationLog,
-                    aUriInfo);
+        return this.currentNotificationLogResponse(currentNotificationLog);
 
-        return response;
     }
 
-    @GET
-    @Path("{notificationId}")
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    public Response getNotificationLog(
-            @PathParam("notificationId") String aNotificationId,
-            @Context UriInfo aUriInfo) {
+    @GetMapping(value = "{notificationId}", produces = OvationsMediaType.ID_OVATION_TYPE)
+    public ResponseEntity<String> getNotificationLog(@PathVariable("notificationId") String aNotificationId) {
 
-        NotificationLog notificationLog =
-            this.notificationApplicationService()
-                .notificationLog(aNotificationId);
+        NotificationLog notificationLog = this.notificationApplicationService().notificationLog(aNotificationId);
 
         if (notificationLog == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
 
-        Response response =
-            this.notificationLogResponse(
-                    notificationLog,
-                    aUriInfo);
+        return this.notificationLogResponse(notificationLog);
 
-        return response;
     }
 
-    private Response currentNotificationLogResponse(
-            NotificationLog aCurrentNotificationLog,
-            UriInfo aUriInfo) {
+    private ResponseEntity<String> currentNotificationLogResponse(NotificationLog aCurrentNotificationLog) {
 
-        NotificationLogRepresentation log =
-            new NotificationLogRepresentation(aCurrentNotificationLog);
+        NotificationLogRepresentation log = new NotificationLogRepresentation(aCurrentNotificationLog);
 
-        log.setLinkSelf(
-                this.selfLink(aCurrentNotificationLog, aUriInfo));
+        log.setLinkSelf(this.selfLink(aCurrentNotificationLog));
 
-        log.setLinkPrevious(
-            this.previousLink(aCurrentNotificationLog, aUriInfo));
+        log.setLinkPrevious(this.previousLink(aCurrentNotificationLog));
 
         String serializedLog = ObjectSerializer.instance().serialize(log);
 
-        Response response =
-            Response
-                .ok(serializedLog)
-                .cacheControl(this.cacheControlFor(60))
-                .build();
+        return ResponseEntity.ok().cacheControl(this.cacheControlFor(60)).body(serializedLog);
 
-        return response;
     }
 
-    private Response notificationLogResponse(
-            NotificationLog aNotificationLog,
-            UriInfo aUriInfo) {
+    private ResponseEntity<String> notificationLogResponse(NotificationLog aNotificationLog) {
 
-        NotificationLogRepresentation log =
-            new NotificationLogRepresentation(aNotificationLog);
+        NotificationLogRepresentation log = new NotificationLogRepresentation(aNotificationLog);
 
-        log.setLinkSelf(this.selfLink(aNotificationLog, aUriInfo));
+        log.setLinkSelf(this.selfLink(aNotificationLog));
 
-        log.setLinkNext(this.nextLink(aNotificationLog, aUriInfo));
+        log.setLinkNext(this.nextLink(aNotificationLog));
 
-        log.setLinkPrevious(this.previousLink(aNotificationLog, aUriInfo));
+        log.setLinkPrevious(this.previousLink(aNotificationLog));
 
         String serializedLog = ObjectSerializer.instance().serialize(log);
 
-        Response response =
-            Response
-                .ok(serializedLog)
-                .cacheControl(this.cacheControlFor(3600))
-                .build();
-
-        return response;
+        return ResponseEntity.ok().cacheControl(this.cacheControlFor(3600)).body(serializedLog);
     }
 
-    private Link linkFor(
-            String aRelationship,
-            String anId,
-            UriInfo aUriInfo) {
+    private Link linkFor(String aRelationship, String anId) {
 
         Link link = null;
 
         if (anId != null) {
 
-            UriBuilder builder = aUriInfo.getBaseUriBuilder();
+            UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/notifications/{notificationId}");
 
-            String linkUrl =
-                builder
-                    .path("notifications")
-                    .path(anId)
-                    .build()
-                    .toString();
+            String linkUrl = builder.buildAndExpand(anId).toUriString();
 
-            link = new Link(
-                    linkUrl,
-                    aRelationship,
-                    null,
-                    OvationsMediaType.ID_OVATION_TYPE);
+            link = new Link(linkUrl, aRelationship, null, OvationsMediaType.ID_OVATION_TYPE);
         }
 
         return link;
     }
 
-    private Link nextLink(
-            NotificationLog aNotificationLog,
-            UriInfo aUriInfo) {
-        return
-            this.linkFor(
-                    "next",
-                    aNotificationLog.nextNotificationLogId(),
-                    aUriInfo);
+    private Link nextLink(NotificationLog aNotificationLog) {
+        return this.linkFor("next", aNotificationLog.nextNotificationLogId());
     }
 
-    private Link previousLink(
-            NotificationLog aNotificationLog,
-            UriInfo aUriInfo) {
+    private Link previousLink(NotificationLog aNotificationLog) {
 
-        return
-            this.linkFor(
-                    "previous",
-                    aNotificationLog.previousNotificationLogId(),
-                    aUriInfo);
+        return this.linkFor("previous", aNotificationLog.previousNotificationLogId());
     }
 
-    private Link selfLink(
-            NotificationLog aNotificationLog,
-            UriInfo aUriInfo) {
-        return
-            this.linkFor(
-                    "self",
-                    aNotificationLog.notificationLogId(),
-                    aUriInfo);
+    private Link selfLink(NotificationLog aNotificationLog) {
+        return this.linkFor("self", aNotificationLog.notificationLogId());
     }
 }

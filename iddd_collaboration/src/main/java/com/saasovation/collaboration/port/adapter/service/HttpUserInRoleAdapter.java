@@ -14,8 +14,8 @@
 
 package com.saasovation.collaboration.port.adapter.service;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import com.saasovation.collaboration.domain.model.collaborator.Collaborator;
 import com.saasovation.collaboration.domain.model.tenant.Tenant;
@@ -27,6 +27,8 @@ public class HttpUserInRoleAdapter implements UserInRoleAdapter {
     private static final String PROTOCOL = "http";
     private static final String URL_TEMPLATE =
             "/idovation/tenants/{tenantId}/users/{username}/inRole/{role}";
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public HttpUserInRoleAdapter() {
         super();
@@ -41,19 +43,17 @@ public class HttpUserInRoleAdapter implements UserInRoleAdapter {
         T collaborator = null;
 
         try {
-            ClientRequest request =
-                    this.buildRequest(aTenant, anIdentity, aRoleName);
+            ResponseEntity<String> response = restTemplate.getForEntity(this.buildURLFor(URL_TEMPLATE), String.class, aTenant.id(), anIdentity, aRoleName);
 
-            ClientResponse<String> response = request.get(String.class);
 
-            if (response.getStatus() == 200) {
+            if (response.getStatusCodeValue() == 200) {
                 collaborator =
                     new CollaboratorTranslator()
                         .toCollaboratorFromRepresentation(
-                            response.getEntity(),
+                            response.getBody(),
                             aCollaboratorClass);
-            } else if (response.getStatus() == 204) {
-                ; // not an error, return null
+            } else if (response.getStatusCodeValue() == 204) {
+                // not an error, return null
             } else {
                 throw new IllegalStateException(
                         "There was a problem requesting the user: "
@@ -61,7 +61,7 @@ public class HttpUserInRoleAdapter implements UserInRoleAdapter {
                         + " in role: "
                         + aRoleName
                         + " with resulting status: "
-                        + response.getStatus());
+                        + response.getStatusCode());
             }
 
         } catch (Throwable t) {
@@ -70,21 +70,6 @@ public class HttpUserInRoleAdapter implements UserInRoleAdapter {
         }
 
         return collaborator;
-    }
-
-    private ClientRequest buildRequest(
-            Tenant aTenant,
-            String anIdentity,
-            String aRoleName) {
-
-        ClientRequest request =
-            new ClientRequest(this.buildURLFor(URL_TEMPLATE));
-
-        request.pathParameter("tenantId", aTenant.id());
-        request.pathParameter("username", anIdentity);
-        request.pathParameter("role", aRoleName);
-
-        return request;
     }
 
     private String buildURLFor(String aTemplate) {

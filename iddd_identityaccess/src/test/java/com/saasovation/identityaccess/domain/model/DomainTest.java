@@ -14,21 +14,28 @@
 
 package com.saasovation.identityaccess.domain.model;
 
-import junit.framework.TestCase;
-
 import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.spring.SpringHibernateSessionProvider;
 
-public abstract class DomainTest extends TestCase {
+@RunWith(SpringRunner.class)
+@ContextConfiguration({"classpath:applicationContext-identityaccess.xml",
+                              "classpath:applicationContext-common.xml"})
+@Transactional
+@TestPropertySource("classpath:application-test.properties")
+public abstract class DomainTest {
 
-    protected ApplicationContext applicationContext;
+    @Autowired
     private SpringHibernateSessionProvider sessionProvider;
-    private Transaction transaction;
 
     protected DomainTest() {
         super();
@@ -40,44 +47,12 @@ public abstract class DomainTest extends TestCase {
         return session;
     }
 
-    protected void setUp() throws Exception {
 
-        applicationContext =
-                new ClassPathXmlApplicationContext(
-                        new String[] {
-                                "applicationContext-identityaccess.xml",
-                                "applicationContext-common.xml" });
-
-        this.sessionProvider =
-                (SpringHibernateSessionProvider) applicationContext.getBean("sessionProvider");
-
-        this.setTransaction(this.session().beginTransaction());
+    @Before
+    public void setUp() throws Exception {
 
         DomainEventPublisher.instance().reset();
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>> " + this.getName());
-
-        super.setUp();
     }
 
-    protected void tearDown() throws Exception {
-
-        this.transaction().rollback();
-
-        this.setTransaction(null);
-
-        this.session().clear();
-
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (done)");
-
-        super.tearDown();
-    }
-
-    protected Transaction transaction() {
-        return transaction;
-    }
-
-    private void setTransaction(Transaction aTransaction) {
-        this.transaction = aTransaction;
-    }
 }

@@ -19,6 +19,7 @@ import java.util.Collection;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.type.StringType;
 
 import com.saasovation.common.port.adapter.persistence.hibernate.AbstractHibernateSession;
 import com.saasovation.identityaccess.domain.model.access.Role;
@@ -67,7 +68,7 @@ public class HibernateRoleRepository
                   + "and _obj_.name = ?");
 
         query.setParameter(0, aTenantId);
-        query.setParameter(1, aRoleName, Hibernate.STRING);
+        query.setParameter(1, aRoleName, StringType.INSTANCE);
 
         return (Role) query.uniqueResult();
     }

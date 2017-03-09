@@ -14,49 +14,36 @@
 
 package com.saasovation.identityaccess.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
-import org.jboss.resteasy.annotations.cache.Cache;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.saasovation.common.media.OvationsMediaType;
 import com.saasovation.common.serializer.ObjectSerializer;
-import com.saasovation.identityaccess.application.ApplicationServiceRegistry;
-import com.saasovation.identityaccess.application.IdentityApplicationService;
 import com.saasovation.identityaccess.domain.model.identity.Tenant;
 
-@Path("/tenants")
-public class TenantResource {
+@RestController
+@RequestMapping("/tenants")
+public class TenantResource extends AbstractResource {
 
     public TenantResource() {
         super();
     }
 
-    @GET
-    @Path("{tenantId}")
-    @Produces({ OvationsMediaType.ID_OVATION_TYPE })
-    @Cache(maxAge=3600)
-    public Response getTenant(
-            @PathParam("tenantId") String aTenantId) {
+    @GetMapping(value = "{tenantId}", produces = OvationsMediaType.ID_OVATION_TYPE)
+    public ResponseEntity<String> getTenant(@PathVariable("tenantId") String aTenantId) {
 
         Tenant tenant = this.identityApplicationService().tenant(aTenantId);
 
         if (tenant == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
 
         String tenantRepresentation = ObjectSerializer.instance().serialize(tenant);
 
-        Response response = Response.ok(tenantRepresentation).build();
-
-        return response;
+        return ResponseEntity.ok().cacheControl(this.cacheControlFor(5)).body(tenantRepresentation);
     }
 
-    private IdentityApplicationService identityApplicationService() {
-        return ApplicationServiceRegistry.identityApplicationService();
-    }
 }

@@ -14,13 +14,20 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.Collection;
+
+import org.junit.Test;
 
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 
 public class UserRepositoryTest extends IdentityAccessTest {
 
+    @Test
     public void testAddUser() throws Exception {
 
         User user = this.userAggregate();
@@ -32,6 +39,7 @@ public class UserRepositoryTest extends IdentityAccessTest {
                     .userWithUsername(user.tenantId(), user.username()));
     }
 
+    @Test
     public void testFindUserByUsername() throws Exception {
 
         User user = this.userAggregate();
@@ -43,6 +51,7 @@ public class UserRepositoryTest extends IdentityAccessTest {
                 .userWithUsername(user.tenantId(), user.username()));
     }
 
+    @Test
     public void testRemoveUser() throws Exception {
 
         User user = this.userAggregate();
@@ -60,6 +69,7 @@ public class UserRepositoryTest extends IdentityAccessTest {
                     .userWithUsername(user.tenantId(), user.username()));
     }
 
+    @Test
     public void testFindSimilarlyNamedUsers() throws Exception {
 
         User user = this.userAggregate();

@@ -14,11 +14,20 @@
 
 package com.saasovation.identityaccess.resource;
 
-import org.jboss.resteasy.client.ClientRequest;
-import org.jboss.resteasy.client.ClientResponse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.Test;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.media.Link;
+import com.saasovation.common.media.OvationsMediaType;
 import com.saasovation.common.notification.NotificationLog;
 import com.saasovation.common.notification.NotificationLogReader;
 import com.saasovation.common.notification.NotificationReader;
@@ -38,6 +47,7 @@ public class NotificationResourceTest extends ResourceTestCase {
         super();
     }
 
+    @Test
     public void testBasicNotificationLog() throws Exception {
         this.generateUserEvents();
 
@@ -50,10 +60,11 @@ public class NotificationResourceTest extends ResourceTestCase {
 
         String url = "http://localhost:" + PORT + "/notifications";
 
-        ClientRequest request = new ClientRequest(url);
-        ClientResponse<String> response = request.get(String.class);
-        String serializedNotifications = response.getEntity();
-        System.out.println(serializedNotifications);
+        String serializedNotifications = mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andDo(MockMvcResultHandlers.log())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(OvationsMediaType.ID_OVATION_TYPE))
+                .andReturn().getResponse().getContentAsString();
 
         NotificationLogReader log =
                 new NotificationLogReader(serializedNotifications);
@@ -71,6 +82,7 @@ public class NotificationResourceTest extends ResourceTestCase {
         }
     }
 
+    @Test
     public void testPersonContactInformationChangedNotification() throws Exception {
         this.generateUserEvents();
 
@@ -84,10 +96,11 @@ public class NotificationResourceTest extends ResourceTestCase {
 
         String url = "http://localhost:" + PORT + "/notifications";
 
-        ClientRequest request = new ClientRequest(url);
-        ClientResponse<String> response = request.get(String.class);
-        String serializedNotifications = response.getEntity();
-        System.out.println(serializedNotifications);
+        String serializedNotifications = mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andDo(MockMvcResultHandlers.log())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(OvationsMediaType.ID_OVATION_TYPE))
+                .andReturn().getResponse().getContentAsString();
 
         NotificationLogReader log =
                 new NotificationLogReader(serializedNotifications);
@@ -116,6 +129,7 @@ public class NotificationResourceTest extends ResourceTestCase {
         assertTrue(found);
     }
 
+    @Test
     public void testTenantProvisionedNotification() throws Exception {
         Tenant newTenant =
                 ApplicationServiceRegistry
@@ -138,10 +152,11 @@ public class NotificationResourceTest extends ResourceTestCase {
 
         String url = "http://localhost:" + PORT + "/notifications";
 
-        ClientRequest request = new ClientRequest(url);
-        ClientResponse<String> response = request.get(String.class);
-        String serializedNotifications = response.getEntity();
-        System.out.println(serializedNotifications);
+        String serializedNotifications = mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andDo(MockMvcResultHandlers.log())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(OvationsMediaType.ID_OVATION_TYPE))
+                .andReturn().getResponse().getContentAsString();
 
         NotificationLogReader log =
                 new NotificationLogReader(serializedNotifications);
@@ -166,15 +181,17 @@ public class NotificationResourceTest extends ResourceTestCase {
         assertTrue(found);
     }
 
+    @Test
     public void testNotificationNavigation() throws Exception {
         this.generateUserEvents();
 
         String url = "http://localhost:" + PORT + "/notifications";
 
-        ClientRequest request = new ClientRequest(url);
-        ClientResponse<String> response = request.get(String.class);
-        String serializedNotifications = response.getEntity();
-        System.out.println(serializedNotifications);
+        String serializedNotifications = mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andDo(MockMvcResultHandlers.log())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(OvationsMediaType.ID_OVATION_TYPE))
+                .andReturn().getResponse().getContentAsString();
 
         NotificationLogReader log = new NotificationLogReader(serializedNotifications);
 
@@ -191,11 +208,9 @@ public class NotificationResourceTest extends ResourceTestCase {
 
             Link previous = log.previous();
 
-            request = new ClientRequest(previous.getHref());
-            response = request.get(String.class);
-            serializedNotifications = response.getEntity();
-
-            //System.out.println(serializedNotifications);
+            serializedNotifications = mockMvc.perform(MockMvcRequestBuilders.get(previous.getHref()))
+                    .andDo(MockMvcResultHandlers.log())
+                    .andReturn().getResponse().getContentAsString();
 
             log = new NotificationLogReader(serializedNotifications);
 

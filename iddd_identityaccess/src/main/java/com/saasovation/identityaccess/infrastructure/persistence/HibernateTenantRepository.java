@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.type.StringType;
 
 import com.saasovation.common.port.adapter.persistence.hibernate.AbstractHibernateSession;
 import com.saasovation.identityaccess.domain.model.identity.Tenant;
@@ -58,7 +59,7 @@ public class HibernateTenantRepository
                 "from com.saasovation.identityaccess.domain.model.identity.Tenant as _obj_ "
                 + "where _obj_.name = ?");
 
-        query.setParameter(0, aName, Hibernate.STRING);
+        query.setParameter(0, aName, StringType.INSTANCE);
 
         return (Tenant) query.uniqueResult();
     }

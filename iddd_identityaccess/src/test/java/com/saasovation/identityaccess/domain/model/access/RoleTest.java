@@ -14,6 +14,13 @@
 
 package com.saasovation.identityaccess.domain.model.access;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.domain.model.DomainEventSubscriber;
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
@@ -37,6 +44,7 @@ public class RoleTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testProvisionRole() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Role role = tenant.provisionRole("Manager", "A manager role.");
@@ -44,6 +52,7 @@ public class RoleTest extends IdentityAccessTest {
         assertEquals(1, DomainRegistry.roleRepository().allRoles(tenant.tenantId()).size());
     }
 
+    @Test
     public void testRoleUniqueness() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Role role1 = tenant.provisionRole("Manager", "A manager role.");
@@ -64,6 +73,7 @@ public class RoleTest extends IdentityAccessTest {
         assertTrue(nonUnique);
     }
 
+    @Test
     public void testUserIsInRole() throws Exception {
         Tenant tenant = this.tenantAggregate();
         User user = this.userAggregate();
@@ -79,6 +89,7 @@ public class RoleTest extends IdentityAccessTest {
         assertTrue(managerRole.isInRole(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testUserIsNotInRole() throws Exception {
         Tenant tenant = this.tenantAggregate();
         User user = this.userAggregate();
@@ -95,6 +106,7 @@ public class RoleTest extends IdentityAccessTest {
         assertFalse(accountantRole.isInRole(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testNoRoleInternalGroupsInFindGroupByName() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Role roleA = tenant.provisionRole("RoleA", "A role of A.");
@@ -121,6 +133,7 @@ public class RoleTest extends IdentityAccessTest {
         assertTrue(error);
     }
 
+    @Test
     public void testInternalGroupAddedEventsNotPublished() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupAssignedToRole>() {
             @Override
@@ -182,6 +195,7 @@ public class RoleTest extends IdentityAccessTest {
         assertEquals(1, groupSomethingAddedCount);
     }
 
+    @Test
     public void testInternalGroupRemovedEventsNotPublished() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupUnassignedFromRole>() {
             @Override

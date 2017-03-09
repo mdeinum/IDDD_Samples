@@ -14,6 +14,11 @@
 
 package com.saasovation.identityaccess.domain.model.access;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.identityaccess.domain.model.DomainRegistry;
 import com.saasovation.identityaccess.domain.model.IdentityAccessTest;
 import com.saasovation.identityaccess.domain.model.identity.Tenant;
@@ -25,6 +30,7 @@ public class AuthorizationServiceTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testUserInRoleAuthorization() throws Exception {
 
         Tenant tenant = this.tenantAggregate();
@@ -53,6 +59,7 @@ public class AuthorizationServiceTest extends IdentityAccessTest {
         assertFalse(authorized);
     }
 
+    @Test
     public void testUsernameInRoleAuthorization() throws Exception {
 
         Tenant tenant = this.tenantAggregate();

@@ -14,7 +14,15 @@
 
 package com.saasovation.identityaccess.domain.model.identity;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
+
+import org.junit.Test;
 
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.domain.model.DomainEventSubscriber;
@@ -33,6 +41,7 @@ public class GroupTest extends IdentityAccessTest {
         super();
     }
 
+    @Test
     public void testProvisionGroup() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Group groupA = tenant.provisionGroup("GroupA", "A group named GroupA");
@@ -40,6 +49,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(1, DomainRegistry.groupRepository().allGroups(tenant.tenantId()).size());
     }
 
+    @Test
     public void testAddGroup() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupGroupAdded>() {
             @Override
@@ -64,6 +74,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(1, groupGroupAddedCount);
     }
 
+    @Test
     public void testAddUser() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupUserAdded>() {
             @Override
@@ -88,6 +99,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(1, groupUserAddedCount);
     }
 
+    @Test
     public void testRemoveGroup() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupGroupRemoved>() {
             @Override
@@ -114,6 +126,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(1, groupGroupRemovedCount);
     }
 
+    @Test
     public void testRemoveUser() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupUserRemoved>() {
             @Override
@@ -140,6 +153,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(1, groupUserRemovedCount);
     }
 
+    @Test
     public void testRemoveGroupReferencedUser() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Group groupA = tenant.provisionGroup("GroupA", "A group named GroupA");
@@ -162,6 +176,7 @@ public class GroupTest extends IdentityAccessTest {
         assertFalse(reGrouped.isMember(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testRepositoryRemoveGroup() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Group groupA = tenant.provisionGroup("GroupA", "A group named GroupA");
@@ -179,6 +194,7 @@ public class GroupTest extends IdentityAccessTest {
         assertNull(nullGroup);
     }
 
+    @Test
     public void testUserIsMemberOfNestedGroup() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupGroupAdded>() {
             @Override
@@ -208,6 +224,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(1, groupGroupAddedCount);
     }
 
+    @Test
     public void testUserIsNotMember() throws Exception {
         User user = this.userAggregate();
         DomainRegistry.userRepository().add(user);
@@ -222,6 +239,7 @@ public class GroupTest extends IdentityAccessTest {
         assertFalse(groupA.isMember(user, DomainRegistry.groupMemberService()));
     }
 
+    @Test
     public void testNoRecursiveGroupings() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<GroupGroupAdded>() {
             @Override
@@ -260,6 +278,7 @@ public class GroupTest extends IdentityAccessTest {
         assertEquals(2, groupGroupAddedCount);
     }
 
+    @Test
     public void testNoRoleInternalGroupsInFindAllGroups() throws Exception {
         Tenant tenant = this.tenantAggregate();
         Group groupA = tenant.provisionGroup("GroupA", "A group named GroupA");

@@ -1,5 +1,12 @@
 package com.saasovation.identityaccess.application;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.saasovation.common.event.EventStore;
 import com.saasovation.common.event.TestableDomainEvent;
 import com.saasovation.common.notification.NotificationLog;
@@ -17,6 +24,7 @@ public class NotificationApplicationServiceTest extends ApplicationServiceTest {
         super();
     }
 
+    @Test
     public void testCurrentNotificationLog() throws Exception {
         NotificationLog log =
                 this.notificationApplicationService.currentNotificationLog();
@@ -28,6 +36,7 @@ public class NotificationApplicationServiceTest extends ApplicationServiceTest {
         assertFalse(log.isArchived());
     }
 
+    @Test
     public void testNotificationLog() throws Exception {
         NotificationLogId id = NotificationLogId.first(NotificationLogFactory.notificationsPerLog());
 
@@ -40,13 +49,15 @@ public class NotificationApplicationServiceTest extends ApplicationServiceTest {
         assertTrue(log.isArchived());
     }
 
+    @Test
     public void testPublishNotifications() throws Exception {
         notificationApplicationService.publishNotifications();
 
         assertTrue(notificationPublisher.internalOnlyTestConfirmation());
     }
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         this.notificationApplicationService =

@@ -14,9 +14,14 @@
 
 package com.saasovation.identityaccess.resource;
 
-import org.jboss.resteasy.client.ClientRequest;
+import static org.hamcrest.CoreMatchers.is;
 
-import com.saasovation.common.media.RepresentationReader;
+import org.junit.Test;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import com.saasovation.common.media.OvationsMediaType;
 import com.saasovation.identityaccess.domain.model.identity.Tenant;
 
 public class TenantResourceTest extends ResourceTestCase {
@@ -25,20 +30,20 @@ public class TenantResourceTest extends ResourceTestCase {
         super();
     }
 
+    @Test
     public void testGetTenant() throws Exception {
         Tenant tenant = this.tenantAggregate();
 
         String url = "http://localhost:" + PORT + "/tenants/{tenantId}";
 
         System.out.println(">>> GET: " + url);
-        ClientRequest request = new ClientRequest(url);
-        request.pathParameter("tenantId", tenant.tenantId().id());
-        String output = request.getTarget(String.class);
-        System.out.println(output);
 
-        RepresentationReader reader = new RepresentationReader(output);
+        mockMvc.perform(MockMvcRequestBuilders.get(url, tenant.tenantId().id()))
+                .andDo(MockMvcResultHandlers.log())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(OvationsMediaType.ID_OVATION_TYPE))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name", is(tenant.name())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.active", is(true)));
 
-        assertEquals(tenant.name(), reader.stringValue("name"));
-        assertTrue(reader.booleanValue("active"));
     }
 }
