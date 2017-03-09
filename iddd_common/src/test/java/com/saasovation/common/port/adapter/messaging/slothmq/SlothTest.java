@@ -66,6 +66,8 @@ public class SlothTest extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
+
+		this.publisher.publish("my.test.type", "CLOSE:");
 		this.testExchangeListener.close();
 
 		SlothClient.instance().closeAll();

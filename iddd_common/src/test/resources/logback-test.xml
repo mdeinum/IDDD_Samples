@@ -11,8 +11,10 @@
     </appender>
 
     <logger name="com.saasovation" level="debug" />
+    <logger name="org.springframework.test.web.servlet.result" level="debug" />
+    <logger name="org.hibernate" level="INFO" />
 
-    <root level="error">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 

@@ -186,7 +186,7 @@ public abstract class SlothWorker {
     private void openHub() {
         try {
             this.socket = ServerSocketChannel.open();
-            this.socket.bind(new InetSocketAddress(HUB_PORT));
+            this.socket.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), HUB_PORT));
             this.socket.configureBlocking(true);
             this.port = HUB_PORT;
             logger.info("Opened on port: {}", this.port);
