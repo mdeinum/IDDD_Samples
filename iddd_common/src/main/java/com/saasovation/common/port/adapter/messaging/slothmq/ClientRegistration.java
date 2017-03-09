@@ -19,8 +19,11 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ClientRegistration {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class ClientRegistration {
+	private static final Logger logger = LoggerFactory.getLogger(ClientRegistration.class);
 	private Set<String> exchanges;
 	private InetAddress ipAddress;
 	private int port;
@@ -42,7 +45,7 @@ public class ClientRegistration {
     }
 
 	public void addSubscription(String anExchangeName) {
-		System.out.println("ADDING EXCHANGE: " + anExchangeName);
+		logger.info("ADDING EXCHANGE: {}", anExchangeName);
 		this.exchanges.add(anExchangeName);
 	}
 

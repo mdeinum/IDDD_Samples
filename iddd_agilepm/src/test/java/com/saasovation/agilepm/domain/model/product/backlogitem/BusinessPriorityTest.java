@@ -15,6 +15,7 @@
 package com.saasovation.agilepm.domain.model.product.backlogitem;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import com.saasovation.agilepm.domain.model.DomainTest;
 
@@ -110,7 +111,7 @@ public class BusinessPriorityTest extends DomainTest {
     }
 
     private NumberFormat decimal(int aNumberOfDecimals) {
-        NumberFormat fmt = NumberFormat.getInstance();
+        NumberFormat fmt = NumberFormat.getInstance(Locale.US);
         fmt.setMinimumFractionDigits(aNumberOfDecimals);
         fmt.setMaximumFractionDigits(aNumberOfDecimals);
         return fmt;

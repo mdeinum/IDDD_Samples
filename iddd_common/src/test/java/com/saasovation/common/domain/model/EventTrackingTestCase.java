@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import com.saasovation.common.notification.NotificationReader;
 import com.saasovation.common.port.adapter.messaging.Exchanges;
+import com.saasovation.common.port.adapter.messaging.slothmq.SlothClient;
 import com.saasovation.common.port.adapter.messaging.slothmq.SlothServer;
 
 public abstract class EventTrackingTestCase extends TestCase {
@@ -170,7 +171,7 @@ public abstract class EventTrackingTestCase extends TestCase {
         // this.collaborationSlothMQExchangeListener.close();
         // this.identityAccessSlothMQExchangeListener.close();
         //
-        // SlothClient.instance().closeAll();
+         SlothClient.instance().closeAll();
 
         super.tearDown();
     }

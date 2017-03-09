@@ -52,7 +52,7 @@ function start() {
 
     echo "Starting RabbitMQ container..."
     docker rm -f "${rabbitmqContainerName}"
-    docker run --name "${rabbitmqContainerName}" -p 5672:5672 -p "${rabbitmqManagementHttpPort}":15672 -e RABBITMQ_NODENAME="${rabbitmqNodeName}" -d rabbitmq:3-management
+    docker run --name "${rabbitmqContainerName}" --hostname "${rabbitmqNodeName}" -p 5672:5672 -p "${rabbitmqManagementHttpPort}":15672 -d rabbitmq:3-management
     echo "Waiting for RabbitMQ to be up and running..."
     waitForContainer "${rabbitmqContainerName}" "Server startup complete;"
 

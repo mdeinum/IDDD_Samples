@@ -18,8 +18,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class ExchangeListener {
 
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private Set<String> messageTypes;
 
     public ExchangeListener() {

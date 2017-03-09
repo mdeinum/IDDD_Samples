@@ -18,8 +18,7 @@ import java.sql.Connection;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.connection.ConnectionProvider;
-import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.internal.SessionImpl;
 
 public class SpringHibernateSessionProvider {
 
@@ -35,12 +34,8 @@ public class SpringHibernateSessionProvider {
         Connection connection = null;
 
         try {
-            SessionFactoryImplementor sfi =
-                   (SessionFactoryImplementor) this.sessionFactory;
 
-            ConnectionProvider connectionProvider = sfi.getConnectionProvider();
-
-            connection = connectionProvider.getConnection();
+            connection = ((SessionImpl) this.session()).connection();
 
         } catch (Exception e) {
             throw new IllegalStateException(

@@ -36,7 +36,9 @@ public class SlothTest extends TestCase {
 		this.publisher.publish("my.test.type2", "An even bigger message, still.");
 		this.publisher.publish("my.test.type3", "An even bigger (bigger!) message, still.");
 
-		Thread.sleep(1000L);
+		while (TestExchangeListenerAgain.uniqueMessages().size() == 0) {
+			Thread.sleep(100L);
+		}
 
 		assertEquals("my.test.type", testExchangeListener.receivedType());
 		assertEquals("A tiny little message.", testExchangeListener.receivedMessage());

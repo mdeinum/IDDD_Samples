@@ -14,6 +14,7 @@
 
 package com.saasovation.common.port.adapter.messaging.slothmq;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -54,9 +55,11 @@ public class SlothMQPipesFiltersTest extends TestCase {
     public void testPhoneNumbersCounter() throws Exception {
         String processId = this.phoneNumberExecutive.start(phoneNumbers);
 
-        Thread.sleep(1000L);
-
         PhoneNumberProcess process = this.phoneNumberExecutive.processOfId(processId);
+        while (!process.isCompleted()) {
+            Thread.sleep(25L);
+            process = this.phoneNumberExecutive.processOfId(processId);
+        }
 
         assertNotNull(process);
         assertEquals(2, process.matchedPhoneNumbers());
@@ -73,7 +76,7 @@ public class SlothMQPipesFiltersTest extends TestCase {
 
         phoneNumberExecutive = new PhoneNumberExecutive();
         phoneNumberFinder = new PhoneNumberFinder();
-        matchtedPhoneNumberCounter = new MatchtedPhoneNumberCounter();
+        matchtedPhoneNumberCounter = new MatchedPhoneNumberCounter();
         totalPhoneNumbersCounter = new TotalPhoneNumbersCounter();
 
         SlothClient.instance().register(this.phoneNumberExecutive);
@@ -147,12 +150,13 @@ public class SlothMQPipesFiltersTest extends TestCase {
 
     private class PhoneNumberExecutive extends ExchangeListener {
 
+
         private Map<String, PhoneNumberProcess> processes;
 
         public PhoneNumberExecutive() {
             super();
 
-            this.processes = new HashMap<String, PhoneNumberProcess>();
+            this.processes = Collections.synchronizedMap(new HashMap<>());
         }
 
         public PhoneNumberProcess processOfId(String aProcessId) {
@@ -163,9 +167,7 @@ public class SlothMQPipesFiltersTest extends TestCase {
 
             PhoneNumberProcess process = new PhoneNumberProcess();
 
-            synchronized (this.processes) {
-                this.processes.put(process.id(), process);
-            }
+            this.processes.put(process.id(), process);
 
             String allPhoneNumbers = "";
 
@@ -186,7 +188,7 @@ public class SlothMQPipesFiltersTest extends TestCase {
 
             send(notification);
 
-            System.out.println("STARTED: " + process.id());
+            logger.info("STARTED: {}", process.id());
 
             return process.id();
         }
@@ -207,21 +209,15 @@ public class SlothMQPipesFiltersTest extends TestCase {
 
             if (reader.typeName().contains("AllPhoneNumbersCounted")) {
                 process.setTotalPhoneNumbers(reader.eventIntegerValue("totalPhoneNumbers"));
-                System.out.println("AllPhoneNumbersCounted...");
+                logger.debug("AllPhoneNumbersCounted...");
             } else if (reader.typeName().contains("MatchedPhoneNumbersCounted")) {
                 process.setMatchedPhoneNumbers(reader.eventIntegerValue("matchedPhoneNumbers"));
-                System.out.println("MatchedPhoneNumbersCounted...");
+                logger.debug("MatchedPhoneNumbersCounted...");
             }
 
             if (process.isCompleted()) {
-                System.out.println(
-                        "Process: "
-                        + process.id()
-                        + ": "
-                        + process.matchedPhoneNumbers()
-                        + " of "
-                        + process.totalPhoneNumbers()
-                        + " phone numbers found.");
+               logger.debug(
+                        "Process: {}: {} of {} phone numbers found.", process.id(), process.matchedPhoneNumbers(), process.totalPhoneNumbers());
             }
         }
 
@@ -252,7 +248,7 @@ public class SlothMQPipesFiltersTest extends TestCase {
 
         @Override
         protected void filteredDispatch(String aType, String aTextMessage) {
-            System.out.println("AllPhoneNumbersListed (to match)...");
+            logger.debug("AllPhoneNumbersListed (to match)...");
 
             NotificationReader reader = new NotificationReader(aTextMessage);
 
@@ -292,9 +288,9 @@ public class SlothMQPipesFiltersTest extends TestCase {
         }
     }
 
-    private class MatchtedPhoneNumberCounter extends ExchangeListener {
+    private class MatchedPhoneNumberCounter extends ExchangeListener {
 
-        public MatchtedPhoneNumberCounter() {
+        public MatchedPhoneNumberCounter() {
             super();
         }
 
@@ -306,7 +302,7 @@ public class SlothMQPipesFiltersTest extends TestCase {
         @Override
         protected void filteredDispatch(String aType, String aTextMessage) {
 
-            System.out.println("PhoneNumbersMatched (to count)...");
+            logger.debug("PhoneNumbersMatched (to count)...");
 
             NotificationReader reader = new NotificationReader(aTextMessage);
 
@@ -349,7 +345,7 @@ public class SlothMQPipesFiltersTest extends TestCase {
         @Override
         protected void filteredDispatch(String aType, String aTextMessage) {
 
-            System.out.println("AllPhoneNumbersListed (to total)...");
+            logger.debug("AllPhoneNumbersListed (to total)...");
 
             NotificationReader reader = new NotificationReader(aTextMessage);
 

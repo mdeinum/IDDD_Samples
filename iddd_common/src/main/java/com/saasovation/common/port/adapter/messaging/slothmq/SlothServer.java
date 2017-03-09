@@ -24,56 +24,57 @@ import java.util.Map;
  */
 public class SlothServer extends SlothWorker {
 
-	private Map<Integer,ClientRegistration> clientRegistrations;
+    private Map<Integer, ClientRegistration> clientRegistrations;
 
-	public static void executeInProcessDetachedServer() {
-		Thread serverThread = new Thread() {
-			@Override
-			public void run() {
-				SlothServer.executeNewServer();
-			}
-		};
+    public static void executeInProcessDetachedServer() {
+        Thread serverThread = new Thread() {
 
-		serverThread.start();
-	}
+            @Override
+            public void run() {
+                SlothServer.executeNewServer();
+            }
+        };
 
-	public static void executeNewServer() {
-		SlothServer slothServer = new SlothServer();
+        serverThread.start();
+    }
 
-		slothServer.execute();
-	}
+    public static void executeNewServer() {
+        SlothServer slothServer = new SlothServer();
 
-	public static void main(String anArguments[]) throws Exception {
-		SlothServer.executeNewServer();
-	}
+        slothServer.execute();
+    }
 
-	public SlothServer() {
-		super();
+    public static void main(String anArguments[]) throws Exception {
+        SlothServer.executeNewServer();
+    }
 
-		this.clientRegistrations = new HashMap<Integer,ClientRegistration>();
-	}
+    public SlothServer() {
+        super();
 
-	public void execute() {
+        this.clientRegistrations = new HashMap<Integer, ClientRegistration>();
+    }
 
-		while (!this.isClosed()) {
-		    String receivedData = this.receive();
+    public void execute() {
 
-		    if (receivedData != null) {
-		        this.handleMessage(receivedData);
-		    }
-		}
-	}
+        while (!this.isClosed()) {
+            String receivedData = this.receive();
 
-	@Override
-	protected boolean slothHub() {
-	    return true;
-	}
+            if (receivedData != null) {
+                this.handleMessage(receivedData);
+            }
+        }
+    }
 
-	private ClientRegistration attach(String aReceivedData) {
-		int port = Integer.parseInt(aReceivedData.substring(7));
+    @Override
+    protected boolean slothHub() {
+        return true;
+    }
 
-		return this.attach(port);
-	}
+    private ClientRegistration attach(String aReceivedData) {
+        int port = Integer.parseInt(aReceivedData.substring(7));
+
+        return this.attach(port);
+    }
 
     private ClientRegistration attach(int aPort) {
         ClientRegistration clientRegistration = this.clientRegistrations.get(aPort);
@@ -86,71 +87,71 @@ public class SlothServer extends SlothWorker {
         return clientRegistration;
     }
 
-	private void handleMessage(String aReceivedData) {
-		System.out.println("SLOTH SERVER: Handling: " + aReceivedData);
+    private void handleMessage(String aReceivedData) {
+        logger.info("Handling: {}", aReceivedData);
 
-		if (aReceivedData.startsWith("ATTACH:")) {
-			this.attach(aReceivedData);
-		} else if (aReceivedData.startsWith("CLOSE:")) {
-			this.close();
-		} else if (aReceivedData.startsWith("PUBLISH:")) {
-			this.publishToClients(aReceivedData);
-		} else if (aReceivedData.startsWith("SUBSCRIBE:")) {
-			this.subscribeClientTo(aReceivedData.substring(10));
-		} else if (aReceivedData.startsWith("UNSUBSCRIBE:")) {
-			this.unsubscribeClientFrom(aReceivedData.substring(12));
-		} else {
-			System.out.println("SLOTH SERVER: Does not understand: " + aReceivedData);
-		}
-	}
+        if (aReceivedData.startsWith("ATTACH:")) {
+            this.attach(aReceivedData);
+        } else if (aReceivedData.startsWith("CLOSE:")) {
+            this.close();
+        } else if (aReceivedData.startsWith("PUBLISH:")) {
+            this.publishToClients(aReceivedData);
+        } else if (aReceivedData.startsWith("SUBSCRIBE:")) {
+            this.subscribeClientTo(aReceivedData.substring(10));
+        } else if (aReceivedData.startsWith("UNSUBSCRIBE:")) {
+            this.unsubscribeClientFrom(aReceivedData.substring(12));
+        } else {
+            logger.warn("Does not understand: {}", aReceivedData);
+        }
+    }
 
-	private void publishToClients(String anExchangeMessage) {
+    private void publishToClients(String anExchangeMessage) {
 
-		int exchangeDivider = anExchangeMessage.indexOf("PUBLISH:");
-		int typeDivider = anExchangeMessage.indexOf("TYPE:", exchangeDivider + 8);
+        int exchangeDivider = anExchangeMessage.indexOf("PUBLISH:");
+        int typeDivider = anExchangeMessage.indexOf("TYPE:", exchangeDivider + 8);
 
-		if (exchangeDivider == -1) {
-			System.out.println("SLOTH SERVER: PUBLISH: No exchange name; ignoring: " + anExchangeMessage);
-		} else if (typeDivider == -1) {
-			System.out.println("SLOTH SERVER: PUBLISH: No TYPE; ignoring: " + anExchangeMessage);
-		} else {
-			String exchangeName = anExchangeMessage.substring(exchangeDivider + 8, typeDivider);
+        if (exchangeDivider == -1) {
+            logger.warn("PUBLISH: No exchange name; ignoring: {}", anExchangeMessage);
+        } else if (typeDivider == -1) {
+            logger.warn("PUBLISH: No TYPE; ignoring: {}", anExchangeMessage);
+        } else {
+            String exchangeName = anExchangeMessage.substring(exchangeDivider + 8, typeDivider);
 
-			for (ClientRegistration clientSubscriptions : this.clientRegistrations.values()) {
-				if (clientSubscriptions.isSubscribedTo(exchangeName)) {
-					this.sendTo(clientSubscriptions.port(), anExchangeMessage);
-				}
-			}
-		}
-	}
+            for (ClientRegistration clientSubscriptions : this.clientRegistrations.values()) {
+                if (clientSubscriptions.isSubscribedTo(exchangeName)) {
+                    this.sendTo(clientSubscriptions.port(), anExchangeMessage);
+                }
+            }
+        }
+    }
 
-	private void subscribeClientTo(String aPortWithExchangeName) {
-	    String[] parts = aPortWithExchangeName.split(":");
-		int port = Integer.parseInt(parts[0]);
-		String exchangeName = parts[1];
-
-		ClientRegistration clientRegistration = this.clientRegistrations.get(port);
-
-		if (clientRegistration == null) {
-			clientRegistration = this.attach(port);
-		}
-
-		clientRegistration.addSubscription(exchangeName);
-
-		System.out.println("SLOTH SERVER: Subscribed: " + clientRegistration + " TO: " + exchangeName);
-	}
-
-	private void unsubscribeClientFrom(String aPortWithExchangeName) {
+    private void subscribeClientTo(String aPortWithExchangeName) {
         String[] parts = aPortWithExchangeName.split(":");
         int port = Integer.parseInt(parts[0]);
         String exchangeName = parts[1];
 
-		ClientRegistration clientRegistration = this.clientRegistrations.get(port);
+        ClientRegistration clientRegistration = this.clientRegistrations.get(port);
 
-		if (clientRegistration != null) {
-			clientRegistration.removeSubscription(exchangeName);
+        if (clientRegistration == null) {
+            clientRegistration = this.attach(port);
+        }
 
-			System.out.println("SLOTH SERVER: Unsubscribed: " + clientRegistration + " FROM: " + exchangeName);
-		}
-	}
+        clientRegistration.addSubscription(exchangeName);
+
+        logger.debug("Subscribed: {} TO: {}", clientRegistration, exchangeName);
+    }
+
+    private void unsubscribeClientFrom(String aPortWithExchangeName) {
+        String[] parts = aPortWithExchangeName.split(":");
+        int port = Integer.parseInt(parts[0]);
+        String exchangeName = parts[1];
+
+        ClientRegistration clientRegistration = this.clientRegistrations.get(port);
+
+        if (clientRegistration != null) {
+            clientRegistration.removeSubscription(exchangeName);
+
+            logger.debug("SUnsubscribed: {} FROM: {}", clientRegistration, exchangeName);
+        }
+    }
 }

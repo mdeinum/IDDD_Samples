@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 
 public class EnumUserType<E extends Enum<E>> implements UserType {
@@ -41,9 +42,11 @@ public class EnumUserType<E extends Enum<E>> implements UserType {
         return clazz;
     }
 
+    @Override
     public Object nullSafeGet(
             ResultSet resultSet,
             String[] names,
+            SharedSessionContractImplementor session,
             Object owner)
     throws HibernateException, SQLException {
         String name = resultSet.getString(names[0]);
@@ -54,10 +57,12 @@ public class EnumUserType<E extends Enum<E>> implements UserType {
         return result;
     }
 
+    @Override
     public void nullSafeSet(
             PreparedStatement preparedStatement,
             Object value,
-            int index)
+            int index,
+            SharedSessionContractImplementor session)
     throws HibernateException, SQLException {
         if (null == value) {
             preparedStatement.setNull(index, Types.VARCHAR);

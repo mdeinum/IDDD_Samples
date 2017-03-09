@@ -49,6 +49,6 @@ public class NotificationSerializer extends AbstractSerializer {
     }
 
     private NotificationSerializer() {
-        this(false, false);
+        this(true, false);
     }
 }
