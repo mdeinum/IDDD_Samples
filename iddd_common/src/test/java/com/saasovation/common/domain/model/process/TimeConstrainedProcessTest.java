@@ -14,6 +14,13 @@
 
 package com.saasovation.common.domain.model.process;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.common.CommonTestCase;
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.domain.model.DomainEventSubscriber;
@@ -26,10 +33,7 @@ public class TimeConstrainedProcessTest extends CommonTestCase {
     private TestableTimeConstrainedProcess process;
     private boolean received;
 
-    public TimeConstrainedProcessTest() {
-        super();
-    }
-
+    @Test
     public void testCompletedProcess() throws Exception {
         DomainEventPublisher.instance().subscribe(new DomainEventSubscriber<TestableTimeConstrainedProcessTimedOut>() {
 

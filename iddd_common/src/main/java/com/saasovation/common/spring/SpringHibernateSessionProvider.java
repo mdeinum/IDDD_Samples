@@ -22,8 +22,6 @@ import org.hibernate.internal.SessionImpl;
 
 public class SpringHibernateSessionProvider {
 
-    private static final ThreadLocal<Session> sessionHolder = new ThreadLocal<Session>();
-
     private SessionFactory sessionFactory;
 
     public SpringHibernateSessionProvider() {
@@ -48,14 +46,7 @@ public class SpringHibernateSessionProvider {
     }
 
     public Session session() {
-        Session threadBoundSession = sessionHolder.get();
-
-        if (threadBoundSession == null) {
-            threadBoundSession = this.sessionFactory.openSession();
-            sessionHolder.set(threadBoundSession);
-        }
-
-        return threadBoundSession;
+        return this.sessionFactory.getCurrentSession();
     }
 
     public void setSessionFactory(SessionFactory aSessionFactory) {

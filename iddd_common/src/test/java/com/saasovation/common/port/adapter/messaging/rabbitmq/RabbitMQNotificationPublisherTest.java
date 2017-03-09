@@ -14,7 +14,11 @@
 
 package com.saasovation.common.port.adapter.messaging.rabbitmq;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.Date;
+
+import org.junit.Test;
 
 import com.saasovation.common.CommonTestCase;
 import com.saasovation.common.domain.model.DomainEvent;
@@ -30,10 +34,7 @@ import com.saasovation.common.port.adapter.persistence.hibernate.HibernatePublis
 
 public class RabbitMQNotificationPublisherTest extends CommonTestCase {
 
-    public RabbitMQNotificationPublisherTest() {
-        super();
-    }
-
+    @Test
     public void testPublishNotifications() throws Exception {
         EventStore eventStore = this.eventStore();
 
@@ -56,9 +57,7 @@ public class RabbitMQNotificationPublisherTest extends CommonTestCase {
     }
 
     @Override
-    protected void setUp() throws Exception {
-        DomainEventPublisher.instance().reset();
-
+    public void setUp() throws Exception {
         super.setUp();
 
         // always start with at least 20 events

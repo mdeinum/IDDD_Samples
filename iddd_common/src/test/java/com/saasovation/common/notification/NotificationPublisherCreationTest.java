@@ -14,6 +14,10 @@
 
 package com.saasovation.common.notification;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
 import com.saasovation.common.CommonTestCase;
 import com.saasovation.common.event.EventStore;
 import com.saasovation.common.event.MockEventStore;
@@ -23,10 +27,7 @@ import com.saasovation.common.port.adapter.persistence.hibernate.HibernatePublis
 
 public class NotificationPublisherCreationTest extends CommonTestCase {
 
-    public NotificationPublisherCreationTest() {
-        super();
-    }
-
+    @Test
     public void testNewNotificationPublisher() throws Exception {
 
         EventStore eventStore = new MockEventStore(new PersistenceManagerProvider() {});

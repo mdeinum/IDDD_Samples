@@ -18,61 +18,39 @@ import junit.framework.TestCase;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.saasovation.common.domain.model.DomainEventPublisher;
 import com.saasovation.common.spring.SpringHibernateSessionProvider;
 
-public abstract class CommonTestCase extends TestCase {
+@RunWith(SpringRunner.class)
+@ContextConfiguration("classpath:applicationContext-common.xml")
+@Transactional
+public abstract class CommonTestCase {
 
-    protected ApplicationContext applicationContext;
+    @Autowired
     protected SpringHibernateSessionProvider sessionProvider;
-    private Transaction transaction;
 
     public CommonTestCase() {
         super();
     }
 
     protected Session session() {
-        Session session = this.sessionProvider.session();
-
-        return session;
+        return this.sessionProvider.session();
     }
 
-    protected Transaction transaction() {
-        return this.transaction;
-    }
-
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
         DomainEventPublisher.instance().reset();
-
-        this.applicationContext = new ClassPathXmlApplicationContext("applicationContext-common.xml");
-
-        this.sessionProvider = (SpringHibernateSessionProvider) this.applicationContext.getBean("sessionProvider");
-
-        this.setTransaction(this.session().beginTransaction());
-
-        System.out.println(">>>>>>>>>>>>>>>>>>>> (start)" + this.getName());
-
-        super.setUp();
     }
 
-    protected void tearDown() throws Exception {
-
-        this.transaction().rollback();
-
-        this.setTransaction(null);
-
-        this.session().clear();
-
-        System.out.println("<<<<<<<<<<<<<<<<<<<< (end)");
-
-        super.tearDown();
-    }
-
-    private void setTransaction(Transaction aTransaction) {
-        this.transaction = aTransaction;
-    }
 }

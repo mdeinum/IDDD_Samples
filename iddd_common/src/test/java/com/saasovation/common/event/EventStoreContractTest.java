@@ -14,15 +14,18 @@
 
 package com.saasovation.common.event;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.common.CommonTestCase;
 import com.saasovation.common.persistence.PersistenceManagerProvider;
 
 public class EventStoreContractTest extends CommonTestCase {
 
-    public EventStoreContractTest() {
-        super();
-    }
-
+    @Test
     public void testAllStoredEventsBetween() throws Exception {
         EventStore eventStore = this.eventStore();
 
@@ -33,6 +36,7 @@ public class EventStoreContractTest extends CommonTestCase {
         assertEquals(10, eventStore.allStoredEventsBetween(totalEvents - 9, totalEvents).size());
     }
 
+    @Test
     public void testAllStoredEventsSince() throws Exception {
         EventStore eventStore = this.eventStore();
 
@@ -45,6 +49,7 @@ public class EventStoreContractTest extends CommonTestCase {
         assertEquals(10, eventStore.allStoredEventsSince(totalEvents - 10).size());
     }
 
+    @Test
     public void testAppend() throws Exception {
         EventStore eventStore = this.eventStore();
 
@@ -67,6 +72,7 @@ public class EventStoreContractTest extends CommonTestCase {
         assertEquals(domainEvent.occurredOn(), reconstitutedDomainEvent.occurredOn());
     }
 
+    @Test
     public void testCountStoredEvents() throws Exception {
         EventStore eventStore = this.eventStore();
 
@@ -100,6 +106,7 @@ public class EventStoreContractTest extends CommonTestCase {
         assertEquals(lastDomainEvent.occurredOn(), reconstitutedDomainEvent.occurredOn());
     }
 
+    @Test
     public void testStoredEvent() throws Exception {
         EventStore eventStore = this.eventStore();
 

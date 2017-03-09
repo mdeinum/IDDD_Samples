@@ -14,6 +14,13 @@
 
 package com.saasovation.common.notification;
 
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.saasovation.common.CommonTestCase;
 import com.saasovation.common.event.EventStore;
 import com.saasovation.common.event.MockEventStore;
@@ -21,10 +28,7 @@ import com.saasovation.common.persistence.PersistenceManagerProvider;
 
 public class NotificationLogTest extends CommonTestCase {
 
-    public NotificationLogTest() {
-        super();
-    }
-
+    @Test
     public void testCurrentNotificationLogFromFactory() throws Exception {
         EventStore eventStore = this.eventStore();
         NotificationLogFactory factory = new NotificationLogFactory(eventStore);
@@ -37,6 +41,7 @@ public class NotificationLogTest extends CommonTestCase {
         assertFalse(log.isArchived());
     }
 
+    @Test
     public void testFirstNotificationLogFromFactory() throws Exception {
         EventStore eventStore = this.eventStore();
         NotificationLogId id = NotificationLogId.first(NotificationLogFactory.notificationsPerLog());
@@ -50,6 +55,7 @@ public class NotificationLogTest extends CommonTestCase {
         assertTrue(log.isArchived());
     }
 
+    @Test
     public void testPreviousOfCurrentNotificationLogFromFactory() throws Exception {
         EventStore eventStore = this.eventStore();
         long totalEvents = eventStore.countStoredEvents();
@@ -67,6 +73,7 @@ public class NotificationLogTest extends CommonTestCase {
         assertTrue(log.isArchived());
     }
 
+    @Test
     public void testEncodedWithDecodedNavigationIds() throws Exception {
         EventStore eventStore = this.eventStore();
         NotificationLogFactory factory = new NotificationLogFactory(eventStore);
