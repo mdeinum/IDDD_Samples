@@ -1,96 +1,82 @@
-
 allprojects {
-	apply plugin: 'java'
-    sourceCompatibility=1.8
-    targetCompatibility=1.8
-
+    // Define repositorie to get dependencies
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
     configurations {
 
         all.collect { configuration ->
             configuration.exclude group: 'commons-logging'
-            configuration.exclude group: 'org.slf4j', module: 'slf4j-simple'
         }
+
+        dependencyManagement {
+            canBeConsumed = false
+            canBeResolved = false
+            visible = false
+        }
+
+        matching {
+            it.name.endsWith('Classpath') || it.name.contains('providedCompile')
+        }.all { it.extendsFrom(dependencyManagement) }
     }
-}
-
-subprojects {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-   }
-
-    dependencies { 
-        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.24'
-        compile group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.24'
-        compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.1'
-
-        testCompile group: 'junit', name: 'junit', version: '4.12'
-        testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.7.RELEASE'
-    }
-
 
 }
 
-project(':iddd_common') {
+subprojects { subproject ->
 
-    dependencies {
-        compile group: 'com.google.code.gson', name: 'gson', version: '2.1'
-        compile group: 'com.rabbitmq', name: 'amqp-client', version: '3.0.4'
-        compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.2.8.Final'
-        compile group: 'dom4j', name: 'dom4j', version: '1.6.1'
+    if (subproject.name != 'iddd_platform') {
 
-        compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
-        compile group: 'org.springframework', name: 'spring-orm', version: '4.3.7.RELEASE'
+        apply plugin: 'java'
 
-        compile group: 'org.iq80.leveldb', name: 'leveldb', version: '0.9'
-        compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.7.2'
-        compile group: 'javassist', name: 'javassist', version: '3.8.0.GA'
-        compile group: 'javax.transaction', name: 'jta', version: '1.1'
+        defaultTasks 'build'
 
-        testCompile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
-        testCompile group: 'mysql', name: 'mysql-connector-java', version: '5.1.41'
-        testCompile group: 'com.zaxxer', name: 'HikariCP', version:'2.6.0'
-    }
-}
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(23)
+            }
+        }
 
-project(':iddd_identityaccess') {
-    dependencies {
-        compile project(':iddd_common')
-        compile group: 'org.springframework', name: 'spring-context', version: '4.3.7.RELEASE'
-        compile group: 'org.springframework', name: 'spring-orm', version: '4.3.7.RELEASE'
-        compile group: 'org.springframework', name: 'spring-webmvc', version: '4.3.7.RELEASE'
+        tasks {
+            withType(JavaCompile).configureEach {
+                options.compilerArgs.add('-Xlint:all')
+                options.compilerArgs.add('-Xlint:-processing')
+                options.compilerArgs.add('--enable-preview')
+                options.compilerArgs.add('-parameters')
+            }
 
-        compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+            withType(Test).configureEach {
+                useJUnitPlatform()
+                jvmArgs += '--enable-preview'
+                systemProperty("java.awt.headless", "true")
+            }
 
-        testCompile files(this.project(':iddd_common').sourceSets.test.output)
-        testCompile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
-        testCompile group: 'mysql', name: 'mysql-connector-java', version: '5.1.41'
-        testCompile group: 'com.zaxxer', name: 'HikariCP', version:'2.6.0'
-        testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
-        testCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
-    }
-}
+            withType(Jar).configureEach {
+                duplicatesStrategy = DuplicatesStrategy.WARN
+            }
+        }
 
-project(':iddd_collaboration') {
-    dependencies {
-        compile project(':iddd_common')
-        compile group: 'org.springframework', name: 'spring-webmvc', version: '4.3.7.RELEASE'
+        dependencies {
 
-        compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+            dependencyManagement(enforcedPlatform(dependencies.project(path: ':iddd_platform')))
 
-        testCompile files(this.project(':iddd_common').sourceSets.test.output)
-        testCompile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
-        testCompile group: 'mysql', name: 'mysql-connector-java', version: '5.1.41'
-        testCompile group: 'com.zaxxer', name: 'HikariCP', version:'2.6.0'
-        testCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+            // Logging, route everything through SLF4J
+            implementation group: 'org.slf4j', name: 'slf4j-api'
+            runtimeOnly group: 'org.slf4j', name: 'slf4j-simple'
 
-    }
-}
 
-project(':iddd_agilepm') {
-    dependencies {
-        compile project(':iddd_common')
+            // Add dependencies for testing (these will only be used for the testing phase)
+            testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter'
 
-        testCompile files(this.project(':iddd_common').sourceSets.test.output)
+            testImplementation group: 'org.mockito', name: 'mockito-core'
+            testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter'
+            testImplementation group: 'org.springframework', name: 'spring-test'
+
+            if (subproject.name != 'iddd_common') {
+                implementation project(':iddd_common')
+                testImplementation(testFixtures(project(":iddd_common")))
+            }
+
+        }
     }
 }

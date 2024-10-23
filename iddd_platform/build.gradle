@@ -1,0 +1,30 @@
+plugins {
+    id 'java-platform'
+}
+
+javaPlatform {
+    allowDependencies()
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    api(platform("com.fasterxml.jackson:jackson-bom:2.18.0"))
+    api(platform("org.junit:junit-bom:5.11.3"))
+    api(platform("org.mockito:mockito-bom:5.14.1"))
+    api(platform("org.springframework:spring-framework-bom:4.3.30.RELEASE"))
+    api(platform("org.slf4j:slf4j-bom:2.0.16"))
+
+    constraints {
+        api("junit:junit:4.13.2")
+        api group: 'com.google.code.gson', name: 'gson', version: '2.11.0'
+
+        api("javax.xml.bind:jaxb-api:2.3.1")
+        api("com.sun.xml.bind:jaxb-core:2.3.0")
+        api("com.sun.xml.bind:jaxb-impl:2.3.0")
+        api("com.sun.xml.bind:jaxb-xjc:2.3.0")
+    }
+}

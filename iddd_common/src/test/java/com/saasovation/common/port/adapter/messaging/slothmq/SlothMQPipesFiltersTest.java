@@ -32,14 +32,7 @@ import com.saasovation.common.port.adapter.messaging.PhoneNumbersMatched;
 
 public class SlothMQPipesFiltersTest extends TestCase {
 
-    private ExchangePublisher publisher;
-
-    private ExchangeListener matchtedPhoneNumberCounter;
-    private PhoneNumberExecutive phoneNumberExecutive;
-    private ExchangeListener phoneNumberFinder;
-    private ExchangeListener totalPhoneNumbersCounter;
-
-    private static String[] phoneNumbers = new String[] {
+    private static final String[] phoneNumbers = new String[] {
         "303-555-1212   John",
         "212-555-1212   Joe",
         "718-555-1212   Zoe",
@@ -47,6 +40,14 @@ public class SlothMQPipesFiltersTest extends TestCase {
         "312-555-1212   Jerry",
         "303-555-9999   Sally"
     };
+
+    private ExchangePublisher publisher;
+
+    private ExchangeListener matchtedPhoneNumberCounter;
+    private PhoneNumberExecutive phoneNumberExecutive;
+    private ExchangeListener phoneNumberFinder;
+    private ExchangeListener totalPhoneNumbersCounter;
+
 
     public SlothMQPipesFiltersTest() {
         super();

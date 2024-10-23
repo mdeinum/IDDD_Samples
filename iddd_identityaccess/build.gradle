@@ -1,0 +1,13 @@
+dependencies {
+    implementation group: 'org.springframework', name: 'spring-context'
+    implementation group: 'org.springframework', name: 'spring-orm'
+    implementation group: 'org.springframework', name: 'spring-webmvc'
+
+    compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+
+    testImplementation group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
+    testImplementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.41'
+    testImplementation group: 'com.zaxxer', name: 'HikariCP', version:'2.6.0'
+    testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
+    testImplementation group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+}

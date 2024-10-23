@@ -14,8 +14,8 @@
 
 package com.saasovation.common.port.adapter.messaging.slothmq;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * I am a simple messaging server.
@@ -27,13 +27,7 @@ public class SlothServer extends SlothWorker {
     private Map<Integer, ClientRegistration> clientRegistrations;
 
     public static void executeInProcessDetachedServer() {
-        Thread serverThread = new Thread() {
-
-            @Override
-            public void run() {
-                SlothServer.executeNewServer();
-            }
-        };
+        Thread serverThread = new Thread(SlothServer::executeNewServer);
 
         serverThread.start();
     }
@@ -50,8 +44,7 @@ public class SlothServer extends SlothWorker {
 
     public SlothServer() {
         super();
-
-        this.clientRegistrations = new HashMap<Integer, ClientRegistration>();
+        this.clientRegistrations = new ConcurrentHashMap<>();
     }
 
     public void execute() {

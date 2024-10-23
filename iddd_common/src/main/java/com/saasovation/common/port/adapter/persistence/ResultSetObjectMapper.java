@@ -30,9 +30,9 @@ import java.util.Set;
 public class ResultSetObjectMapper<T> {
 
     private String columnPrefix;
-    private JoinOn joinOn;
-    private ResultSet resultSet;
-    private Class<? extends T> resultType;
+    private final JoinOn joinOn;
+    private final ResultSet resultSet;
+    private final Class<? extends T> resultType;
 
     public ResultSetObjectMapper(
             ResultSet aResultSet,
@@ -123,57 +123,61 @@ public class ResultSetObjectMapper<T> {
 
                 // boolean, byte, char, short, int, long, float, double
 
-                if (typeName.equals("int")) {
-                    value = new Integer(this.resultSet().getInt(aColumnName));
-                } else if (typeName.equals("long")) {
-                    value = new Long(this.resultSet().getLong(aColumnName));
-                } else if (typeName.equals("boolean")) {
-                    int oneOrZero = this.resultSet().getInt(aColumnName);
-                    value = oneOrZero == 1 ? Boolean.TRUE : Boolean.FALSE;
-                } else if (typeName.equals("short")) {
-                    value = new Short(this.resultSet().getShort(aColumnName));
-                } else if (typeName.equals("float")) {
-                    value = new Float(this.resultSet().getFloat(aColumnName));
-                } else if (typeName.equals("double")) {
-                    value = new Double(this.resultSet().getDouble(aColumnName));
-                } else if (typeName.equals("byte")) {
-                    value = new Byte(this.resultSet().getByte(aColumnName));
-                } else if (typeName.equals("char")) {
-                    String charStr = this.resultSet().getString(aColumnName);
-                    if (charStr == null) {
-                        value = new Character((char) 0);
-                    } else {
-                        value = charStr.charAt(0);
-                    }
+              switch (typeName) {
+                case "int" -> value = this.resultSet().getInt(aColumnName);
+                case "long" -> value = this.resultSet().getLong(aColumnName);
+                case "boolean" -> {
+                  int oneOrZero = this.resultSet().getInt(aColumnName);
+                  value = oneOrZero == 1 ? Boolean.TRUE : Boolean.FALSE;
                 }
+                case "short" -> value = this.resultSet().getShort(aColumnName);
+                case "float" -> value = this.resultSet().getFloat(aColumnName);
+                case "double" -> value = this.resultSet().getDouble(aColumnName);
+                case "byte" -> value = this.resultSet().getByte(aColumnName);
+                case "char" -> {
+                  String charStr = this.resultSet().getString(aColumnName);
+                  if (charStr == null) {
+                    value = (char) 0;
+                  } else {
+                    value = charStr.charAt(0);
+                  }
+                }
+              }
 
             } else {
-                if (typeName.equals("java.lang.String")) {
-                    value = this.resultSet().getString(aColumnName);
-                } else if (typeName.equals("java.lang.Integer")) {
-                    tempStr = this.resultSet().getString(aColumnName);
-                    value = tempStr == null ? null: Integer.parseInt(tempStr);
-                } else if (typeName.equals("java.lang.Long")) {
-                    tempStr = this.resultSet().getString(aColumnName);
-                    value = tempStr == null ? null : Long.parseLong(tempStr);
-                } else if (typeName.equals("java.lang.Boolean")) {
-                    int oneOrZero = this.resultSet().getInt(aColumnName);
-                    value = oneOrZero == 1 ? Boolean.TRUE : Boolean.FALSE;
-                } else if (typeName.equals("java.util.Date")) {
-                    java.sql.Timestamp timestamp = this.resultSet().getTimestamp(aColumnName);
-                    if (timestamp != null) {
-                        value = new java.util.Date(timestamp.getTime() + timestamp.getNanos());
-                    }
-                } else if (typeName.equals("java.lang.Short")) {
-                    tempStr = this.resultSet().getString(aColumnName);
-                    value = tempStr == null ? null: Short.parseShort(tempStr);
-                } else if (typeName.equals("java.lang.Float")) {
-                    tempStr = this.resultSet().getString(aColumnName);
-                    value = tempStr == null ? null : Float.parseFloat(tempStr);
-                } else if (typeName.equals("java.lang.Double")) {
-                    tempStr = this.resultSet().getString(aColumnName);
-                    value = tempStr == null ? null : Double.parseDouble(tempStr);
+              switch (typeName) {
+                case "java.lang.String" -> value = this.resultSet().getString(aColumnName);
+                case "java.lang.Integer" -> {
+                  tempStr = this.resultSet().getString(aColumnName);
+                  value = tempStr == null ? null : Integer.parseInt(tempStr);
                 }
+                case "java.lang.Long" -> {
+                  tempStr = this.resultSet().getString(aColumnName);
+                  value = tempStr == null ? null : Long.parseLong(tempStr);
+                }
+                case "java.lang.Boolean" -> {
+                  int oneOrZero = this.resultSet().getInt(aColumnName);
+                  value = oneOrZero == 1 ? Boolean.TRUE : Boolean.FALSE;
+                }
+                case "java.util.Date" -> {
+                  java.sql.Timestamp timestamp = this.resultSet().getTimestamp(aColumnName);
+                  if (timestamp != null) {
+                    value = new java.util.Date(timestamp.getTime() + timestamp.getNanos());
+                  }
+                }
+                case "java.lang.Short" -> {
+                  tempStr = this.resultSet().getString(aColumnName);
+                  value = tempStr == null ? null : Short.parseShort(tempStr);
+                }
+                case "java.lang.Float" -> {
+                  tempStr = this.resultSet().getString(aColumnName);
+                  value = tempStr == null ? null : Float.parseFloat(tempStr);
+                }
+                case "java.lang.Double" -> {
+                  tempStr = this.resultSet().getString(aColumnName);
+                  value = tempStr == null ? null : Double.parseDouble(tempStr);
+                }
+              }
             }
 
         } catch (Exception e) {
@@ -193,31 +197,26 @@ public class ResultSetObjectMapper<T> {
         Collection<Object> newCollection = null;
 
         if (List.class.isAssignableFrom(aType)) {
-            newCollection = new ArrayList<Object>();
+            newCollection = new ArrayList<>();
         } else if (Set.class.isAssignableFrom(aType)) {
-            newCollection = new HashSet<Object>();
+            newCollection = new HashSet<>();
         }
 
         return newCollection;
     }
 
     private T createFrom(Class<? extends T> aClass) {
-        T object = null;
-
         try {
             Constructor<? extends T> ctor = aClass.getDeclaredConstructor();
-
-            object = ctor.newInstance();
+            return ctor.newInstance();
 
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot create instance of: " + aClass.getName());
         }
-
-        return object;
     }
 
     private String fieldNameToColumnName(String aFieldName) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
 
         if (this.hasColumnPrefix()) {
             buf.append(this.columnPrefix());
@@ -255,7 +254,7 @@ public class ResultSetObjectMapper<T> {
         } catch (Exception e) {
             throw new IllegalStateException(
                     "Cannot read result metadata because: "
-                            + e.getMessage(),
+                        + e.getMessage(),
                     e);
         }
 
@@ -282,8 +281,7 @@ public class ResultSetObjectMapper<T> {
             ResultSet aResultSet,
             Set<String> anAssociationsToMap) {
 
-        Map<String, Collection<Object>> mappedCollections =
-                new HashMap<String, Collection<Object>>();
+        Map<String, Collection<Object>> mappedCollections = new HashMap<>();
 
         String currentAssociationName = null;
 
@@ -304,7 +302,7 @@ public class ResultSetObjectMapper<T> {
 
                     associationField.setAccessible(true);
 
-                    Class<?> associationFieldType = null;
+                    Class<?> associationFieldType;
 
                     Collection<Object> collection = null;
 
@@ -327,11 +325,11 @@ public class ResultSetObjectMapper<T> {
                     String columnName = this.fieldNameToColumnName(fieldName);
 
                     ResultSetObjectMapper<Object> mapper =
-                            new ResultSetObjectMapper<Object>(
-                                    aResultSet,
-                                    associationFieldType,
-                                    this.toObjectPrefix(columnName),
-                                    this.joinOn());
+                        new ResultSetObjectMapper<>(
+                            aResultSet,
+                            associationFieldType,
+                            this.toObjectPrefix(columnName),
+                            this.joinOn());
 
                     Object associationObject = mapper.mapResultToType();
 
@@ -362,8 +360,7 @@ public class ResultSetObjectMapper<T> {
     }
 
     private String toObjectPrefix(String aColumnName) {
-        String objectPrefix = "o_"+aColumnName+"_";
 
-        return objectPrefix;
+      return "o_"+aColumnName+"_";
     }
 }

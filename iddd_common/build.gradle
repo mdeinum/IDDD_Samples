@@ -1,0 +1,30 @@
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
+}
+
+dependencies {
+
+    api group: 'com.google.code.gson', name: 'gson'
+    implementation group: 'com.rabbitmq', name: 'amqp-client', version: '3.0.4'
+    implementation group: 'org.hibernate', name: 'hibernate-entitymanager', version: '5.2.8.Final'
+    implementation group: 'dom4j', name: 'dom4j', version: '1.6.1'
+
+    implementation group: 'org.springframework', name: 'spring-context'
+    implementation group: 'org.springframework', name: 'spring-orm'
+    implementation("javax.xml.bind:jaxb-api")
+    implementation("com.sun.xml.bind:jaxb-impl")
+
+    api group: 'org.iq80.leveldb', name: 'leveldb', version: '0.9'
+    implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.7.2'
+    implementation group: 'javassist', name: 'javassist', version: '3.8.0.GA'
+    implementation group: 'javax.transaction', name: 'jta', version: '1.1'
+
+    testImplementation group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
+    testImplementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.41'
+    testImplementation group: 'com.zaxxer', name: 'HikariCP', version:'2.6.0'
+    testImplementation group: 'org.springframework', name: 'spring-test'
+    testFixturesApi('junit:junit')
+    testFixturesApi('org.junit.vintage:junit-vintage-engine')
+
+}
